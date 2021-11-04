@@ -1,12 +1,12 @@
 {
-  "name": "GHT-Buchungssystem",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
-  "author": "Max Heilmann <support@matix-media.net>",
-  "license": "MIT",
-  "private": true,
-  "devDependencies": {
-    "ts-node": "^10.4.0"
-  }
+    "name": "ght-buchungssystem",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
+    "author": "Max Heilmann <support@matix-media.net>",
+    "license": "MIT",
+    "private": true,
+    "devDependencies": {
+        "ts-node": "^10.4.0"
+    }
 }
