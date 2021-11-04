@@ -1,1 +1,1 @@
-# GHT-Buchungssystem
+# GHT-Buchungssystem ist ein tolles programm
