@@ -1,7 +1,7 @@
-import dotenv from "dotenv";
-import express from "express";
-import expressWs from "express-ws";
-import cors from "cors"
+import * as dotenv from "dotenv";
+import * as express from "express";
+import * as expressWs from "express-ws";
+import * as cors from "cors"
 import logger from "./logger";
 
 
