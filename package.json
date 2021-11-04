@@ -5,5 +5,8 @@
   "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
   "author": "Max Heilmann <support@matix-media.net>",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "ts-node": "^10.4.0"
+  }
 }
