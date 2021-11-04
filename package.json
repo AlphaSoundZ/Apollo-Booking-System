@@ -1,13 +1,14 @@
 {
     "name": "ght-buchungssystem",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "index.ts",
     "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
     "author": "Max Heilmann <support@matix-media.net>",
     "license": "MIT",
     "private": true,
     "scripts": {
-        "dev": "nodemon"
+        "dev": "nodemon",
+        "start": "ts-node ."
     },
     "devDependencies": {
         "nodemon": "^2.0.14",
