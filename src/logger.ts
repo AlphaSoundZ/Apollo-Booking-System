@@ -1,7 +1,6 @@
 import * as log4js from "log4js";
 import * as path from "path";
 
-
 const devMode = (process.env.NODE_ENV || "development") == "development";
 
 const logPath = path.join(__dirname, "../", "logs");
@@ -19,7 +18,7 @@ log4js.configure({
         },
         console: {
             type: "stdout",
-        }
+        },
     },
     categories: {
         default: {
@@ -32,9 +31,9 @@ log4js.configure({
         },
         database: {
             appenders: ["database"],
-            level: logLevel
-        }
-    }
+            level: logLevel,
+        },
+    },
 });
 
 export default log4js.getLogger("server");
