@@ -1,0 +1,9 @@
+{
+  "name": "GHT-Buchungssystem",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
+  "author": "Max Heilmann <support@matix-media.net>",
+  "license": "MIT",
+  "private": true
+}
