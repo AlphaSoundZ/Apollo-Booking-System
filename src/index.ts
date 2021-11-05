@@ -4,7 +4,6 @@ dotenv.config();
 
 // Imports
 import * as express from "express";
-import * as expressWs from "express-ws";
 import * as cors from "cors";
 import db from "./config/database";
 import logger from "./config/logger";
@@ -21,6 +20,6 @@ import logger from "./config/logger";
     app.use(express.urlencoded({ extended: true }));
 
     app.listen(port, () => {
-        logger.info("Started. UI Reachable through http://127.0.0.1:" + port + "/");
+        logger.info("Started. UI reachable through http://127.0.0.1:" + port + "/");
     });
 })();
