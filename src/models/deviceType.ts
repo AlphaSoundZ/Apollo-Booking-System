@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType } from "sequelize-typescript";
 
 @Table
-export default class DeviceTypes extends Model<DeviceTypes> {
+export default class DeviceType extends Model<DeviceType> {
     @Column(DataType.INTEGER)
     ID: number;
 
