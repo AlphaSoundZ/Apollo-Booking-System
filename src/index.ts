@@ -1,23 +1,26 @@
+// Load env
 import * as dotenv from "dotenv";
+dotenv.config();
+
+// Imports
 import * as express from "express";
 import * as expressWs from "express-ws";
 import * as cors from "cors";
+import db from "./config/database";
 import logger from "./config/logger";
-
-dotenv.config();
 
 (async () => {
     const port = process.env.PORT;
     const app = express();
 
     logger.info("Syncing database...");
-    // Sequelize setup here
+    await db.sync();
 
     app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
     app.listen(port, () => {
-        logger.info("Started. UI Reachable through http://localhost:" + port + "/");
+        logger.info("Started. UI Reachable through http://127.0.0.1:" + port + "/");
     });
 })();
