@@ -8,7 +8,9 @@ import DeviceType from "../models/deviceType";
 import Device from "../models/device";
 import Booking from "../models/booking";
 
-const sequelize = new Sequelize(process.env.DATABASE);
+const sequelize = new Sequelize(process.env.DATABASE, {
+    logging: (message) => logger.info(message),
+});
 
 sequelize.addModels([User, DeviceType, Device, Booking]);
 
