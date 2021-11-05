@@ -34,6 +34,7 @@
         "log4js": "^6.3.0",
         "reflect-metadata": "^0.1.13",
         "sequelize": "^6.9.0",
-        "sequelize-typescript": "^2.1.1"
+        "sequelize-typescript": "^2.1.1",
+        "sqlite3": "^5.0.2"
     }
 }
