@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import * as express from "express";
 import * as expressWs from "express-ws";
 import * as cors from "cors";
-import logger from "./logger";
+import logger from "./config/logger";
 
 dotenv.config();
 
