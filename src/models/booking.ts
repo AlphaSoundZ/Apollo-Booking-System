@@ -4,10 +4,8 @@ import {
     Model,
     DataType,
     CreatedAt,
-    UpdatedAt,
     BelongsTo,
     PrimaryKey,
-    HasOne,
     ForeignKey,
 } from "sequelize-typescript";
 import Device from "./device";
