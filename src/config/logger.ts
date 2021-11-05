@@ -3,7 +3,7 @@ import * as path from "path";
 
 const devMode = (process.env.NODE_ENV || "development") == "development";
 
-const logPath = path.join(__dirname, "../", "logs");
+const logPath = path.join(__dirname, "../../", "logs");
 const logLevel = devMode ? "debug" : "info";
 
 log4js.configure({
