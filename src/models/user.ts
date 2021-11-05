@@ -1,7 +1,16 @@
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt } from "sequelize-typescript";
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    CreatedAt,
+    UpdatedAt,
+    PrimaryKey,
+} from "sequelize-typescript";
 
 @Table
 export default class User extends Model<User> {
+    @PrimaryKey
     @Column(DataType.INTEGER)
     ID: number;
 

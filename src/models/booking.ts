@@ -1,21 +1,42 @@
-import { Table, Column, Model, DataType, CreatedAt, UpdatedAt } from "sequelize-typescript";
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    CreatedAt,
+    UpdatedAt,
+    BelongsTo,
+    PrimaryKey,
+    HasOne,
+    ForeignKey,
+} from "sequelize-typescript";
+import Device from "./device";
+import User from "./user";
 
 @Table
 export default class Booking extends Model<Booking> {
+    @PrimaryKey
     @Column(DataType.INTEGER)
     ID: number;
 
-    @Column(DataType.INTEGER)
-    user: number;
+    @ForeignKey(() => User)
+    @Column
+    userId: number;
 
-    @Column(DataType.INTEGER)
-    device: number;
+    @ForeignKey(() => Device)
+    @Column
+    deviceId: number;
 
     @Column
     @CreatedAt
     bookedAt!: Date;
 
-    @Column
-    @UpdatedAt
-    updatedAt!: Date;
+    @Column(DataType.DATE)
+    returnedAt: Date;
+
+    @BelongsTo(() => User)
+    user: User;
+
+    @BelongsTo(() => Device)
+    device: Device;
 }
