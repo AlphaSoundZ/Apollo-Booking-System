@@ -21,6 +21,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.spinner-icon {
+    background-image: url("~@/assets/img/spinner.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
 </style>
 
 <style lang="scss" scoped>
@@ -28,8 +34,8 @@
     background-image: url("~@/assets/img/dotted-cricles.svg");
     background-repeat: no-repeat;
     position: absolute;
-    width: 867px;
-    height: 867px;
+    width: 393px;
+    height: 419px;
     top: 0;
     left: 0;
 
