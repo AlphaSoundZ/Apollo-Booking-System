@@ -3,7 +3,11 @@
         <div
             class="added"
             :class="{ left: left }"
-            :style="{ backgroundColor: background, borderRadius: borderRadius }"
+            :style="{
+                backgroundColor: background,
+                borderRadius: borderRadius,
+                padding: addedPadding,
+            }"
         >
             <slot name="added" />
         </div>
@@ -23,6 +27,9 @@ export default Vue.extend({
         },
         borderRadius: {
             default: "1em",
+        },
+        addedPadding: {
+            default: "0.01em",
         },
     },
 });
