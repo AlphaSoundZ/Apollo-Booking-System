@@ -1,6 +1,8 @@
 <template>
     <div class="big-message">
-        <span v-if="icon" class="icon" :class="icon"></span>
+        <div class="icon">
+            <slot />
+        </div>
         <div class="text">
             <h2 class="message" v-if="message">{{ message }}</h2>
             <h1 class="header" v-if="header">{{ header }}</h1>
@@ -12,7 +14,6 @@
 import Vue from "vue";
 export default Vue.extend({
     props: {
-        icon: String,
         message: String,
         header: String,
     },
@@ -29,6 +30,7 @@ export default Vue.extend({
     height: 100px;
     width: 100px;
     margin-right: 130px;
+    font-size: 100px;
 }
 
 .text {
