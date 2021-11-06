@@ -1,6 +1,8 @@
 <template>
     <div class="loading">
-        <BigMessage :header="header" :message="message" icon="spinner-icon" />
+        <BigMessage :header="header" :message="message">
+            <img src="@/assets/img/spinner.svg" class="spinner-icon" alt="" />
+        </BigMessage>
     </div>
 </template>
 
