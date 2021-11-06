@@ -1,5 +1,5 @@
 <template>
-    <div class="loading">
+    <div class="loading centered-page">
         <BigMessage :header="header" :message="message">
             <img src="@/assets/img/spinner.svg" class="spinner-icon" alt="" />
         </BigMessage>
@@ -22,12 +22,3 @@ export default Vue.extend({
     },
 });
 </script>
-
-<style lang="scss" scoped>
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-</style>
