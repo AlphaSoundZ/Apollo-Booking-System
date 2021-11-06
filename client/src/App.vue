@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" :class="{ 'mouse-hidden': mouseHidden }">
         <div class="branding">
             <img src="@/assets/img/school-logo.png" alt="" />
         </div>
@@ -7,11 +7,41 @@
     </div>
 </template>
 
+<script lang="ts">
+import Vue from "vue";
+import debounce from "lodash.debounce";
+
+export default Vue.extend({
+    data() {
+        return {
+            mouseHidden: true,
+        };
+    },
+    methods: {
+        hideMouse: debounce(function () {
+            this.mouseHidden = true;
+        }, 2000),
+    },
+    mounted() {
+        document.onmousemove = () => {
+            this.mouseHidden = false;
+            this.hideMouse();
+        };
+    },
+});
+</script>
+
 <style lang="scss">
 #app {
     font-family: Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    height: 100vh;
+
+    &.mouse-hidden {
+        cursor: none;
+    }
 }
 
 * {
