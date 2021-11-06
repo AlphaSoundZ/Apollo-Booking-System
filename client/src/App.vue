@@ -22,10 +22,15 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.spinner-icon {
-    background-image: url("~@/assets/img/spinner.svg");
-    background-size: cover;
-    background-repeat: no-repeat;
+img.spinner-icon {
+    height: 1em;
+}
+
+.centered-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 </style>
 
