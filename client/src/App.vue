@@ -29,7 +29,7 @@ export default Vue.extend({
         };
         this.hideMouse();
         setTimeout(() => {
-            this.$refs.application.requestFullscreen();
+            (this.$refs.application as Element).requestFullscreen();
         }, 1);
     },
 });
