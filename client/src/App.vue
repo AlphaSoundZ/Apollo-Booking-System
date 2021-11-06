@@ -3,7 +3,7 @@
         <div class="branding">
             <img src="@/assets/img/school-logo.png" alt="" />
         </div>
-        <router-view />
+        <router-view class="page" />
     </div>
 </template>
 
@@ -78,11 +78,17 @@ img.spinner-icon {
     height: 419px;
     top: 0;
     left: 0;
+    z-index: 0;
 
     img {
         padding: 22px;
         max-width: 195px;
         max-height: 195px;
     }
+}
+
+.page {
+    position: relative;
+    z-index: 1;
 }
 </style>
