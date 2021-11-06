@@ -17,8 +17,8 @@ export default Vue.extend({
         };
     },
     methods: {
-        hideMouse: debounce(() => {
-            (this as unknown as any).mouseHidden = true;
+        hideMouse: debounce(function (this: any) {
+            (this as any).mouseHidden = true;
         }, 2000),
     },
     mounted() {
@@ -26,8 +26,8 @@ export default Vue.extend({
             this.mouseHidden = false;
             this.hideMouse();
         };
-        this.hideMouse();
         setTimeout(() => {
+            this.hideMouse();
             (this.$refs.application as Element).requestFullscreen();
         }, 1);
     },
