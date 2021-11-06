@@ -10,7 +10,6 @@
 <script lang="ts">
 import Vue from "vue";
 import debounce from "lodash.debounce";
-
 export default Vue.extend({
     data() {
         return {
@@ -19,7 +18,7 @@ export default Vue.extend({
     },
     methods: {
         hideMouse: debounce(function () {
-            this.mouseHidden = true;
+            (this as any).mouseHidden = true;
         }, 2000),
     },
     mounted() {
