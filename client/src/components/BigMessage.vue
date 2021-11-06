@@ -30,10 +30,10 @@ export default Vue.extend({
 }
 
 .icon {
-    height: 1em;
-    width: 1em;
-    margin-right: 1.3em;
-    font-size: 1em;
+    height: 100px;
+    width: 100px;
+    margin-right: 130px;
+    font-size: 100px;
 }
 
 .text {
