@@ -18,7 +18,7 @@ export default Vue.extend({
     },
     methods: {
         hideMouse: debounce(function () {
-            (this as any).mouseHidden = true;
+            (this as unknown as any).mouseHidden = true;
         }, 2000),
     },
     mounted() {
