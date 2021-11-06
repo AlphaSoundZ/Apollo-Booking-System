@@ -1,5 +1,5 @@
 <template>
-    <div class="big-message">
+    <div class="big-message" :style="{ fontSize: size + 'px' }">
         <div class="icon">
             <slot />
         </div>
@@ -16,6 +16,9 @@ export default Vue.extend({
     props: {
         message: String,
         header: String,
+        size: {
+            default: 100,
+        },
     },
 });
 </script>
@@ -27,20 +30,20 @@ export default Vue.extend({
 }
 
 .icon {
-    height: 100px;
-    width: 100px;
-    margin-right: 130px;
-    font-size: 100px;
+    height: 1em;
+    width: 1em;
+    margin-right: 1.3em;
+    font-size: 1em;
 }
 
 .text {
     .message {
         font-weight: 300;
-        font-size: 64px;
+        font-size: 0.64em;
     }
 
     .header {
-        font-size: 72px;
+        font-size: 0.72em;
         font-weight: 400;
     }
 }
