@@ -32,11 +32,11 @@ export default Vue.extend({
 .icon {
     height: 100px;
     width: 100px;
-    margin-right: 130px;
     font-size: 100px;
 }
 
 .text {
+    margin-left: 1.3em;
     .message {
         font-weight: 300;
         font-size: 0.64em;
