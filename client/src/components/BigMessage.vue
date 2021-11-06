@@ -1,6 +1,6 @@
 <template>
     <div class="big-message">
-        <i v-if="icon" class="icon" :class="icon"></i>
+        <span v-if="icon" class="icon" :class="icon"></span>
         <div class="text">
             <h2 class="message" v-if="message">{{ message }}</h2>
             <h1 class="header" v-if="header">{{ header }}</h1>
@@ -22,6 +22,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .big-message {
     display: flex;
+    align-items: center;
 }
 
 .icon {
