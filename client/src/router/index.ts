@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Waiting from "@/views/Waiting.vue";
 import Loading from "@/views/Loading.vue";
+import Error from "@/views/Error.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,11 @@ const routes: Array<RouteConfig> = [
         path: "/loading",
         name: "Loading",
         component: Loading,
+    },
+    {
+        path: "/error",
+        name: "Error",
+        component: Error,
     }
 ];
 
