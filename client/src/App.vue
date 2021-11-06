@@ -1,5 +1,5 @@
 <template>
-    <div id="app" :class="{ 'mouse-hidden': mouseHidden }">
+    <div id="app" :class="{ 'mouse-hidden': mouseHidden }" ref="application">
         <div class="branding">
             <img src="@/assets/img/school-logo.png" alt="" />
         </div>
@@ -14,7 +14,7 @@ import debounce from "lodash.debounce";
 export default Vue.extend({
     data() {
         return {
-            mouseHidden: true,
+            mouseHidden: false,
         };
     },
     methods: {
@@ -27,6 +27,10 @@ export default Vue.extend({
             this.mouseHidden = false;
             this.hideMouse();
         };
+        this.hideMouse();
+        setTimeout(() => {
+            this.$refs.application.requestFullscreen();
+        }, 1);
     },
 });
 </script>
@@ -36,6 +40,7 @@ export default Vue.extend({
     font-family: Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: white;
 
     height: 100vh;
 
