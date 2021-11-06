@@ -39,7 +39,6 @@ export default Vue.extend({
 .combined-icon {
     display: flex;
     position: relative;
-    margin-top: 0.18em;
 
     .added {
         display: flex;
