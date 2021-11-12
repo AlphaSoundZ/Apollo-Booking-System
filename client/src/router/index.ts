@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Waiting from "@/views/Waiting.vue";
 import Loading from "@/views/Loading.vue";
 import Error from "@/views/Error.vue";
+import User from "@/views/User.vue";
 
 Vue.use(VueRouter);
 
@@ -13,12 +14,9 @@ const routes: Array<RouteConfig> = [
         component: Waiting,
     },
     {
-        path: "/about",
-        name: "About",
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ "../views/Waiting.vue"),
+        path: "/user",
+        name: "User",
+        component: User,
     },
     {
         path: "/loading",
