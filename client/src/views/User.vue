@@ -11,6 +11,7 @@
                     message="Zum Ausleihen"
                     header="Halte nun ein Gerät an das Lesegerät"
                     size="67"
+                    :class="{ faded: hasRunningBooking }"
                 >
                     <combined-icon border-radius="8px" added-padding=".05em">
                         <span class="mi">nfc</span>
@@ -38,10 +39,25 @@
             <h2>Zuletzt Ausgeliehen</h2>
             <div class="recently-booked">
                 <div class="booking" v-for="booking in history" :key="booking.ID">
-                    <device-icon :device-type="booking.device.type.type" class="device" />
+                    <combined-icon
+                        v-if="!booking.returnedAt"
+                        :left="true"
+                        class="device"
+                        background="#f3f4f9"
+                    >
+                        <device-icon :device-type="booking.device.type.type" />
+                        <template v-slot:added>
+                            <span class="mi">schedule</span>
+                        </template>
+                    </combined-icon>
+                    <device-icon v-else :device-type="booking.device.type.type" class="device" />
                     <div>
                         <h4>{{ booking.device.type.name }}</h4>
-                        <p v-if="booking.returnedAt">
+                        <p v-if="!booking.returnedAt">
+                            Aktuell Ausgeliehen <br />
+                            Seit dem {{ dayjs(booking.bookedAt).format("D.M.YYYY HH:mm") }} Uhr
+                        </p>
+                        <p v-else>
                             Vom {{ dayjs(booking.bookedAt).format("D.M.YYYY HH:mm") }} Uhr bis zum
                             <br />
                             {{ dayjs(booking.returnedAt).format("D.M.YYYY HH:mm") }} Uhr ({{
@@ -92,6 +108,9 @@ export default Vue.extend({
                 },
             ],
         },
+        hasRunningBooking: {
+            default: true,
+        },
     },
     methods: {
         dayjs,
@@ -126,8 +145,14 @@ export default Vue.extend({
     justify-content: center;
     align-items: center;
 
-    .big-message:first-of-type {
-        margin-bottom: 81px;
+    .big-message {
+        &.faded {
+            opacity: 0.1;
+        }
+
+        &:first-of-type {
+            margin-bottom: 81px;
+        }
     }
 }
 
