@@ -3,7 +3,7 @@ import UI from "./ui";
 
 const route = express.Router();
 
-route.ws("/ui", UI);
+route.ws("/ws/ui", UI);
 
 // Serve UI
 route.get("/", express.static("../../client/dist"));
