@@ -31,6 +31,6 @@ import routes from "./routes";
     app.use(routes);
 
     app.listen(port, () => {
-        logger.info("Started. UI reachable through http://127.0.0.1:" + port + "/");
+        logger.info("Started. UI reachable through http://127.0.0.1:" + port + "/#/ui");
     });
 })();
