@@ -34,11 +34,11 @@
             </div>
         </div>
 
-        <div class="infos" v-if="history.length > 0">
+        <div class="infos" v-if="history.length > 0" ref="infos">
             <h2>Zuletzt Ausgeliehen</h2>
             <div class="recently-booked">
                 <div class="booking" v-for="booking in history" :key="booking.ID">
-                    <device-icon :device-type="booking.device.type.type" />
+                    <device-icon :device-type="booking.device.type.type" class="device" />
                     <div>
                         <h4>{{ booking.device.type.name }}</h4>
                         <p v-if="booking.returnedAt">
@@ -132,12 +132,55 @@ export default Vue.extend({
 }
 
 .infos {
+    position: relative;
     width: 610px;
     padding-top: 30px;
+    padding-right: 36px;
+    max-height: 100vh;
+    overflow: hidden;
 
     h2 {
         font-weight: 300;
         font-size: 36px;
+        margin-bottom: 24px;
+    }
+
+    .recently-booked {
+        .booking {
+            background-color: #f3f4f9;
+            padding: 21px;
+            display: flex;
+            align-items: center;
+            border-radius: 23px;
+            margin-bottom: 20px;
+
+            .device {
+                font-size: 85px;
+                margin-right: 27px;
+            }
+
+            h4 {
+                font-size: 24px;
+                font-weight: 400;
+                margin-bottom: 11px;
+            }
+
+            p {
+                font-weight: 300;
+                font-size: 25px;
+            }
+        }
+    }
+
+    &::after {
+        content: "";
+        display: block;
+        position: absolute;
+        height: 120px;
+        bottom: 0;
+        left: 0;
+        width: calc(100% - 36px);
+        background: linear-gradient(0deg, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 0) 100%);
     }
 }
 </style>
