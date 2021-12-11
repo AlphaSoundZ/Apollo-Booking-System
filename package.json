@@ -32,10 +32,6 @@
         "express": "^4.17.1",
         "express-ws": "^5.0.2",
         "log4js": "^6.3.0",
-        "mysql2": "^2.3.3-rc.0",
-        "reflect-metadata": "^0.1.13",
-        "sequelize": "^6.9.0",
-        "sequelize-typescript": "^2.1.1",
         "ws": "^8.2.3"
     }
 }

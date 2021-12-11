@@ -6,7 +6,6 @@ dotenv.config();
 import * as express from "express";
 import * as cors from "cors";
 import * as expressWs from "express-ws";
-import db from "./config/database";
 import logger from "./config/logger";
 
 // Defining app
@@ -18,10 +17,6 @@ expressWs(app);
 import routes from "./routes";
 
 (async () => {
-    // Database setup
-    logger.info("Syncing database...");
-    await db.sync();
-
     // Setting up express extensions
     app.use(cors());
     app.use(express.json());

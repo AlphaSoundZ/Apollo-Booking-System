@@ -8,10 +8,6 @@ const logLevel = devMode ? "debug" : "info";
 
 log4js.configure({
     appenders: {
-        database: {
-            type: "file",
-            filename: path.join(logPath, "db.log"),
-        },
         log: {
             type: "file",
             filename: path.join(logPath, "log.log"),
@@ -27,10 +23,6 @@ log4js.configure({
         },
         server: {
             appenders: ["log", "console"],
-            level: logLevel,
-        },
-        database: {
-            appenders: ["database"],
             level: logLevel,
         },
     },
