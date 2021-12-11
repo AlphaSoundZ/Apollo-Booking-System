@@ -1,8 +1,10 @@
 import { WebSocket } from "ws";
 import logger from "../config/logger";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSEvent = { manager: WebSocketManager; data: any };
 type WSCallback = (event: WSEvent) => Promise<void>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSRequest = { event: string; data?: any };
 
 class WSEventListener {
@@ -20,9 +22,16 @@ export { WSCallback, WSEvent, WSEventListener, WSRequest };
 export default class WebSocketManager {
     ws: WebSocket;
     private listeners: WSEventListener[] = [];
+    private onCloseListener: Array<() => void>;
 
     constructor(ws: WebSocket) {
         this.ws = ws;
+
+        this.ws.on("close", () => {
+            for (const listener of this.onCloseListener) {
+                listener();
+            }
+        });
 
         this.ws.on("message", (data) => {
             let req: WSRequest;
@@ -64,8 +73,13 @@ export default class WebSocketManager {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sendJSON(value: any) {
         this.ws.send(JSON.stringify(value));
+    }
+
+    onclose(listener: () => void) {
+        this.onCloseListener.push(listener);
     }
 
     listen(listener: WSEventListener) {
