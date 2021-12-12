@@ -38,15 +38,10 @@ export default class RFIDManager {
         if (!response.status) return;
 
         const uid = response.data;
-        logger.debug(
-            "Card read UID:",
-            uid[0].toString(16),
-            uid[1].toString(16),
-            uid[2].toString(16),
-            uid[3].toString(16),
-        );
+        this.lastUid =
+            uid[0].toString(16) + uid[1].toString(16) + uid[2].toString(16) + uid[3].toString(16);
 
-        this.reader.stopCrypto();
+        logger.debug("Card read UID:", this.lastUid);
     }
 
     addWebSocket(ws: WebSocketManager) {
