@@ -14,6 +14,5 @@ export default (ws: WebSocket, req: Request) => {
 
     // Add socket to manager
     const rfidManager: RFIDManager = req.app.get("rfidManager");
-    console.log(rfidManager);
     rfidManager.addWebSocket(wsManager);
 };
