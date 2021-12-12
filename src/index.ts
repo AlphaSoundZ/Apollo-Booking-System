@@ -6,6 +6,7 @@ dotenv.config();
 import * as express from "express";
 import * as cors from "cors";
 import * as expressWs from "express-ws";
+import axios from "axios";
 import logger from "./config/logger";
 import RFIDManager from "./RFIDManager";
 
@@ -19,6 +20,19 @@ expressWs(app);
 import routes from "./routes";
 
 (async () => {
+    logger.info("Checking server connection...");
+    let connectionSuccessful = false;
+    while (!connectionSuccessful) {
+        try {
+            await axios.get(apiUrl);
+            connectionSuccessful = true;
+        } catch (err) {
+            logger.error("Could not connect to server:", err);
+            connectionSuccessful = false;
+        }
+    }
+    logger.info("Successfully connected to server");
+
     // Setting up rfid routine
     const rfidManager = new RFIDManager(apiUrl);
 
