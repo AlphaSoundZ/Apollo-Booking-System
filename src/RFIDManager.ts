@@ -99,7 +99,7 @@ export default class RFIDManager {
         try {
             this.listening = true;
 
-            setTimeout(() => {
+            const logoutTimeout = setTimeout(() => {
                 this.sendWebSocket("userLogout");
                 this.freeReader();
                 logger.debug("User automatically logged out");
@@ -111,6 +111,7 @@ export default class RFIDManager {
                 if (newUid == uid) {
                     this.sendWebSocket("userLogout");
                     this.freeReader();
+                    clearInterval(logoutTimeout);
                     logger.debug("User logged out");
                     return;
                 }
