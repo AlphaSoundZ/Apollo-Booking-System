@@ -21,6 +21,6 @@
 4 = Device kann nicht zurückgegeben werden, weil es nicht ausgeliehen wird
 5 = Device kann nicht ausgeliehen weil man bereits etwas ausleiht
 6 = Device wird bereits ausgeliehen
-7 = unexpected error
+7 = Es wurde zweimal eine Usercard eingescannt
 8 = unexpected error
 */
