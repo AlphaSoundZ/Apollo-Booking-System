@@ -14,9 +14,11 @@ export default Vue.extend({
     components: { BigMessage },
     props: {
         header: {
+            type: String,
             default: "Bitte warten...",
         },
         message: {
+            type: String,
             default: "",
         },
     },
