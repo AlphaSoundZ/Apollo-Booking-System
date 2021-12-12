@@ -21,6 +21,7 @@ export default class RFIDManager {
         this.reader = new Mfrc522(softSPI).setResetPin(22);
 
         setTimeout(this.readCycle, 250);
+        logger.info("Listening for rfid tags");
     }
 
     readCycle() {
