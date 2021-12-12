@@ -3,7 +3,6 @@ import * as SoftSPI from "rpi-softspi";
 import * as Mfrc522 from "mfrc522-rpi";
 import logger from "./config/logger";
 import axios from "axios";
-import { throws } from "assert";
 
 export default class RFIDManager {
     private webSockets: WebSocketManager[] = [];
