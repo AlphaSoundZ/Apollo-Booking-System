@@ -32,24 +32,36 @@ export default class RFIDManager {
     readCycle() {
         if (!this.listening) return;
 
-        this.reader.reset();
+        try {
+            this.reader.reset();
 
-        let response = this.reader.findCard();
-        if (!response) return;
+            let response = this.reader.findCard();
+            if (!response) return;
 
-        response = this.reader.getUid();
-        if (!response.status) return;
+            response = this.reader.getUid();
+            if (!response.status) return;
 
-        const uid = response.data;
-        this.lastUid =
-            uid[0].toString(16) + uid[1].toString(16) + uid[2].toString(16) + uid[3].toString(16);
+            const uid = response.data;
+            this.lastUid =
+                uid[0].toString(16) +
+                uid[1].toString(16) +
+                uid[2].toString(16) +
+                uid[3].toString(16);
 
-        logger.debug("Card read UID:", this.lastUid);
+            logger.debug("Card read UID:", this.lastUid);
 
-        if (!this.subRoutineRunning) {
-            this.subRoutine();
-        } else {
-            if (this.runIfSub) this.runIfSub(this.lastUid);
+            if (!this.subRoutineRunning) {
+                this.subRoutine();
+            } else {
+                if (this.runIfSub) this.runIfSub(this.lastUid);
+            }
+        } catch (err) {
+            logger.error("Error occurred while reading/sending request:", err);
+            try {
+                this.sendError({ response: 8, message: err });
+            } catch (uErr) {
+                logger.error("Error occurred while reporting error to UI:", uErr);
+            }
         }
     }
 
