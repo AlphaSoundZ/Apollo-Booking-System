@@ -4,7 +4,7 @@ import * as Mfrc522 from "mfrc522-rpi";
 import logger from "./config/logger";
 
 export default class RFIDManager {
-    private webSockets: WebSocketManager[];
+    private webSockets: WebSocketManager[] = [];
     private apiUrl: string;
     private reader: Mfrc522;
     private listening = true;
