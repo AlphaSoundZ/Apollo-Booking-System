@@ -25,7 +25,7 @@ import routes from "./routes";
     while (!connectionSuccessful) {
         try {
             const response = await axios.get(apiUrl);
-            if (response.data.response != 9) {
+            if (response.data.response != 7) {
                 logger.error(
                     "Server responded with error code:",
                     response.data.response,
