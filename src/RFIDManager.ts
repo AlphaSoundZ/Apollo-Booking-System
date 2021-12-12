@@ -7,11 +7,12 @@ export default class RFIDManager {
     private webSockets: WebSocketManager[];
     private apiUrl: string;
     private reader: Mfrc522;
-    private listening: boolean;
+    private listening = true;
+    private lastUid: string;
+    private subRoutineRunning = false;
 
     constructor(apiUrl: string) {
         this.apiUrl = apiUrl;
-        this.listening = true;
 
         const softSPI = new SoftSPI({
             clock: 23,
@@ -45,18 +46,6 @@ export default class RFIDManager {
             uid[3].toString(16),
         );
 
-        /*const memoryCapacity = this.reader.selectCard(uid);
-        logger.debug("Card memory capacity:", memoryCapacity);
-
-        const key = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
-
-        if (!this.reader.authenticate(8, key, uid)) {
-            logger.warn("Authentication Error");
-            return;
-        }
-
-        logger.debug("Block: 8 Data:", this.reader.getDataForBlock(8));*/
-
         this.reader.stopCrypto();
     }
 
@@ -65,9 +54,13 @@ export default class RFIDManager {
             this.removeWebSocket(ws);
         });
         this.webSockets.push(ws);
+
+        logger.debug("New ui connection");
     }
 
     removeWebSocket(ws: WebSocketManager) {
         this.webSockets.splice(this.webSockets.indexOf(ws));
+
+        logger.debug("UI connection removed");
     }
 }
