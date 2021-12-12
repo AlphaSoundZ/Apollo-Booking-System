@@ -24,8 +24,18 @@ import routes from "./routes";
     let connectionSuccessful = false;
     while (!connectionSuccessful) {
         try {
-            await axios.get(apiUrl);
-            connectionSuccessful = true;
+            const response = await axios.get(apiUrl);
+            if (response.data.response != 9) {
+                logger.error(
+                    "Server responded with error code:",
+                    response.data.response,
+                    "Message:",
+                    response.data.message,
+                );
+                connectionSuccessful = false;
+            } else {
+                connectionSuccessful = true;
+            }
         } catch (err) {
             logger.error("Could not connect to server:", err);
             connectionSuccessful = false;
