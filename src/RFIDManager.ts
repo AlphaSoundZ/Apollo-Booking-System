@@ -26,30 +26,15 @@ export default class RFIDManager {
     }
 
     readCycle() {
-        logger.debug("new cycle");
-
-        if (!this.listening) {
-            logger.debug("Listening is disabled");
-            return;
-        }
-
-        logger.debug("cycle is allowed");
+        if (!this.listening) return;
 
         this.reader.reset();
 
         let response = this.reader.findCard();
-        if (!response) {
-            logger.debug("No card");
-            return;
-        }
-
-        logger.debug("RFID detected. CardType: " + response.bitSize);
+        if (!response) return;
 
         response = this.reader.getUid();
-        if (!response.status) {
-            logger.warn("UID scan error");
-            return;
-        }
+        if (!response.status) return;
 
         const uid = response.data;
         logger.debug(
