@@ -26,7 +26,9 @@ export default class RFIDManager {
 
     readCycle() {
         logger.debug("new cycle");
-        if (!this.listening) return;
+
+        if (this.listening != true) return;
+
         logger.debug("cycle is allowed");
 
         this.reader.reset();
