@@ -7,10 +7,11 @@ export default class RFIDManager {
     private webSockets: WebSocketManager[];
     private apiUrl: string;
     private reader: Mfrc522;
-    private listening = true;
+    private listening: boolean;
 
     constructor(apiUrl: string) {
         this.apiUrl = apiUrl;
+        this.listening = true;
 
         const softSPI = new SoftSPI({
             clock: 23,
@@ -27,7 +28,7 @@ export default class RFIDManager {
     readCycle() {
         logger.debug("new cycle");
 
-        if (!this.listening) {
+        if (this.listening) {
             logger.debug("Listening is disabled");
             return;
         }
