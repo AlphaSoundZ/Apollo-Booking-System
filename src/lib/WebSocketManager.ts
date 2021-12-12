@@ -22,7 +22,7 @@ export { WSCallback, WSEvent, WSEventListener, WSRequest };
 export default class WebSocketManager {
     ws: WebSocket;
     private listeners: WSEventListener[] = [];
-    private onCloseListener: Array<() => void>;
+    private onCloseListener: Array<() => void> = [];
 
     constructor(ws: WebSocket) {
         this.ws = ws;
