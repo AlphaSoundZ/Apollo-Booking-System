@@ -29,7 +29,7 @@ export default class RFIDManager {
         logger.info("Listening for rfid tags");
     }
 
-    readCycle() {
+    private readCycle() {
         if (!this.listening) return;
 
         try {
@@ -60,13 +60,13 @@ export default class RFIDManager {
         }
     }
 
-    freeReader() {
+    private freeReader() {
         this.subRoutineRunning = false;
         this.listening = true;
         this.runIfSub = undefined;
     }
 
-    async subRoutine() {
+    private async subRoutine() {
         try {
             this.subRoutineRunning = true;
             this.listening = false;
@@ -95,7 +95,7 @@ export default class RFIDManager {
         }
     }
 
-    async makeBooking(uid) {
+    private async makeBooking(uid) {
         try {
             this.listening = true;
 
@@ -131,7 +131,7 @@ export default class RFIDManager {
         }
     }
 
-    catchError(err, message) {
+    private catchError(err, message) {
         logger.error(message + ":", err);
         try {
             this.sendError({ response: 8, message: err });
@@ -140,14 +140,14 @@ export default class RFIDManager {
         }
     }
 
-    async sendError(req: { response: number; message: string }) {
+    private async sendError(req: { response: number; message: string }) {
         let statusCode = req.response;
         if (statusCode < 3) statusCode = 8;
         this.sendWebSocket("error", { code: statusCode, message: req.message });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async makeApiRequest(data: any) {
+    private async makeApiRequest(data: any) {
         return (
             await axios.get(this.apiUrl + "?" + new URLSearchParams(data).toString(), {
                 responseType: "json",
@@ -156,13 +156,13 @@ export default class RFIDManager {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sendWebSocket(eventName: string, data: any = {}) {
+    private sendWebSocket(eventName: string, data: any = {}) {
         for (const ws of this.webSockets) {
             ws.triggerEvent(eventName, data);
         }
     }
 
-    addWebSocket(ws: WebSocketManager) {
+    public addWebSocket(ws: WebSocketManager) {
         ws.onclose(() => {
             this.removeWebSocket(ws);
         });
@@ -170,7 +170,7 @@ export default class RFIDManager {
         logger.debug("New ui connection");
     }
 
-    removeWebSocket(ws: WebSocketManager) {
+    public removeWebSocket(ws: WebSocketManager) {
         this.webSockets.splice(this.webSockets.indexOf(ws));
 
         logger.debug("Lost UI connection");
