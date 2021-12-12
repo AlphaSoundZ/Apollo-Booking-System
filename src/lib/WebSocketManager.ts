@@ -2,7 +2,7 @@ import { WebSocket } from "ws";
 import logger from "../config/logger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WSEvent = { manager: WebSocketManager; data: any };
+type WSEvent = { manager: WebSocketManager; data: any; respond: (data: any) => void };
 type WSCallback = (event: WSEvent) => Promise<void>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSRequest = { event: string; data?: any };
@@ -54,10 +54,19 @@ export default class WebSocketManager {
             let eventFound = false;
             for (const listener of this.listeners) {
                 if (listener.eventName !== req.event) continue;
-
                 eventFound = true;
-                if (req.data) listener.callback({ manager: this, data: req.data });
-                else listener.callback({ manager: this, data: {} });
+
+                const respond = (data: any) => {
+                    this.sendJSON({ type: "response", to: listener.eventName, data: data });
+                };
+
+                if (req.data) listener.callback({ manager: this, data: req.data, respond });
+                else
+                    listener.callback({
+                        manager: this,
+                        data: {},
+                        respond,
+                    });
             }
             if (!eventFound) {
                 logger.warn("Received invalid event from websocket:", req.event);
