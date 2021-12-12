@@ -25,12 +25,16 @@ export default class RFIDManager {
     }
 
     readCycle() {
+        logger.debug("new cycle");
         if (!this.listening) return;
 
         this.reader.reset();
 
         let response = this.reader.findCard();
-        if (!response) return;
+        if (!response) {
+            logger.debug("No card");
+            return;
+        }
 
         logger.debug("RFID detected. CardType: " + response.bitSize);
 
