@@ -33,6 +33,7 @@ import routes from "./routes";
                     response.data.message,
                 );
                 connectionSuccessful = false;
+                logger.info("Trying to reconnect in 15 seconds");
                 await new Promise((resolve) => setTimeout(resolve, 15000));
             } else {
                 connectionSuccessful = true;
