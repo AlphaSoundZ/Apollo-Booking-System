@@ -56,12 +56,7 @@ export default class RFIDManager {
                 if (this.runIfSub) this.runIfSub(this.lastUid);
             }
         } catch (err) {
-            logger.error("Error occurred while reading/sending request:", err);
-            try {
-                this.sendError({ response: 8, message: err });
-            } catch (uErr) {
-                logger.error("Error occurred while reporting error to UI:", uErr);
-            }
+            this.catchError(err, "Error occurred while reading uid");
         }
     }
 
@@ -72,60 +67,77 @@ export default class RFIDManager {
     }
 
     async subRoutine() {
-        this.subRoutineRunning = true;
-        this.listening = false;
+        try {
+            this.subRoutineRunning = true;
+            this.listening = false;
 
-        const uid = this.lastUid;
-        this.sendWebSocket("gettingChipInfo");
+            const uid = this.lastUid;
+            this.sendWebSocket("gettingChipInfo");
 
-        const chipInfo = await this.makeApiRequest({ rfid1: uid });
-        const statusCode = chipInfo.response;
-        logger.debug("Chip info status:", statusCode);
+            const chipInfo = await this.makeApiRequest({ rfid1: uid });
+            const statusCode = chipInfo.response;
+            logger.debug("Chip info status:", statusCode);
 
-        if (statusCode == 1) {
-            this.sendWebSocket("deviceReturned");
-            this.freeReader();
-            return;
-        } else if (statusCode > 2 || statusCode < 1) {
-            this.sendError(chipInfo);
-            this.freeReader();
-            return;
-        } else {
-            this.sendWebSocket("userInfo", { user: chipInfo.user });
-            this.makeBooking(uid);
+            if (statusCode == 1) {
+                this.sendWebSocket("deviceReturned");
+                this.freeReader();
+                return;
+            } else if (statusCode > 2 || statusCode < 1) {
+                this.sendError(chipInfo);
+                this.freeReader();
+                return;
+            } else {
+                this.sendWebSocket("userInfo", { user: chipInfo.user });
+                this.makeBooking(uid);
+            }
+        } catch (err) {
+            this.catchError(err, "Error occurred while checking uid");
         }
     }
 
     async makeBooking(uid) {
-        this.listening = true;
+        try {
+            this.listening = true;
 
-        setTimeout(() => {
-            this.sendWebSocket("userLogout");
-            this.freeReader();
-            logger.debug("User automatically logged out");
-        }, 15000);
-
-        this.runIfSub = async (newUid) => {
-            this.listening = false;
-
-            if (newUid == uid) {
+            setTimeout(() => {
                 this.sendWebSocket("userLogout");
                 this.freeReader();
-                logger.debug("User logged out");
-                return;
-            }
+                logger.debug("User automatically logged out");
+            }, 15000);
 
-            const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
-            logger.debug("Booking info status:", booking.response);
+            this.runIfSub = async (newUid) => {
+                this.listening = false;
 
-            if (booking.response > 2) {
-                this.sendError(booking);
+                if (newUid == uid) {
+                    this.sendWebSocket("userLogout");
+                    this.freeReader();
+                    logger.debug("User logged out");
+                    return;
+                }
+
+                const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
+                logger.debug("Booking info status:", booking.response);
+
+                if (booking.response > 2) {
+                    this.sendError(booking);
+                    this.freeReader();
+                    return;
+                }
+                this.sendWebSocket("bookingCompleted");
                 this.freeReader();
-                return;
-            }
-            this.sendWebSocket("bookingCompleted");
-            this.freeReader();
-        };
+            };
+        } catch (err) {
+            this.catchError(err, "Error occurred while booking device");
+        }
+    }
+
+    catchError(err, message) {
+        logger.error(message + ":", err);
+        try {
+            this.sendError({ response: 8, message: err });
+        } catch (uErr) {
+            logger.error("Error occurred while reporting error to UI:", uErr);
+        }
     }
 
     async sendError(req: { response: number; message: string }) {
