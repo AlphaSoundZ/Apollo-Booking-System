@@ -1,0 +1,26 @@
+{
+    "user": {
+        "vorname": "Paul",
+        "nachname": "Peter",
+        "user_id": "1",
+        "klasse": "10b"
+    },
+    "device": {
+        "device_type": "Ipad",
+        "status": true
+    },
+    "response": 1,
+    "message": "Ipad wurde erfolgreich zur\u00fcckgegeben."
+}
+
+/*
+0 = Ausleihen erfolgreich
+1 = Rückgabe erfolgreich
+2 = Info erfolgreich
+3 = Device/Usercard nicht Registriert
+4 = Device kann nicht zurückgegeben werden, weil es nicht ausgeliehen wird
+5 = Device kann nicht ausgeliehen weil man bereits etwas ausleiht
+6 = Device wird bereits ausgeliehen
+7 = unexpected error
+8 = unexpected error
+*/
