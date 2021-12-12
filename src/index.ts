@@ -33,6 +33,7 @@ import routes from "./routes";
                     response.data.message,
                 );
                 connectionSuccessful = false;
+                await new Promise((resolve) => setTimeout(resolve, 15000));
             } else {
                 connectionSuccessful = true;
             }
