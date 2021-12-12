@@ -56,6 +56,7 @@ export default class WebSocketManager {
                 if (listener.eventName !== req.event) continue;
                 eventFound = true;
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const respond = (data: any) => {
                     this.sendJSON({ type: "response", to: listener.eventName, data: data });
                 };
@@ -76,8 +77,6 @@ export default class WebSocketManager {
                     error: "UNKNOWN_EVENT",
                     message: "The specified event was not found",
                 });
-            } else {
-                logger.debug("Received event:", req.event);
             }
         });
     }
