@@ -45,18 +45,16 @@ export default class RFIDManager {
     }
 
     addWebSocket(ws: WebSocketManager) {
-        console.log("t1");
         ws.onclose(() => {
             this.removeWebSocket(ws);
         });
         this.webSockets.push(ws);
-        console.log("t2");
         logger.debug("New ui connection");
     }
 
     removeWebSocket(ws: WebSocketManager) {
         this.webSockets.splice(this.webSockets.indexOf(ws));
 
-        logger.debug("UI connection removed");
+        logger.debug("Lost UI connection");
     }
 }
