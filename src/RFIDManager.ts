@@ -45,7 +45,7 @@ export default class RFIDManager {
             uid[3].toString(16),
         );
 
-        const memoryCapacity = this.reader.selectCard(uid);
+        /*const memoryCapacity = this.reader.selectCard(uid);
         logger.debug("Card memory capacity:", memoryCapacity);
 
         const key = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
@@ -55,7 +55,7 @@ export default class RFIDManager {
             return;
         }
 
-        logger.debug("Block: 8 Data:", this.reader.getDataForBlock(8));
+        logger.debug("Block: 8 Data:", this.reader.getDataForBlock(8));*/
 
         this.reader.stopCrypto();
     }
