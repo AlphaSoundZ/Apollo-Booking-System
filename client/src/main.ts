@@ -57,6 +57,7 @@ new Vue({
                 }
 
                 if (res.type == "event") {
+                    console.log("Event received:", res.event, "data:", res.data);
                     switch (res.event) {
                         case "gettingChipInfo":
                             this.navPage("Loading", {message: "Lade Daten"})
@@ -73,7 +74,7 @@ new Vue({
                     }
                 }
 
-                console.log(JSON.parse(ev.data))
+                //console.log(JSON.parse(ev.data))
             }
         },
         navPage(pageName: string, data: any = {}) {
