@@ -29,6 +29,8 @@ import routes from "./routes";
         } catch (err) {
             logger.error("Could not connect to server:", err);
             connectionSuccessful = false;
+            logger.info("Trying to reconnect in 15 seconds");
+            await new Promise((resolve) => setTimeout(resolve, 15000));
         }
     }
     logger.info("Successfully connected to server");
