@@ -1,6 +1,6 @@
 import WebSocketManager from "./lib/WebSocketManager";
-import SoftSPI from "rpi-softspi";
-import Mfrc522 from "mfrc522-rpi";
+import * as SoftSPI from "rpi-softspi";
+import * as Mfrc522 from "mfrc522-rpi";
 import logger from "./config/logger";
 
 export default class RFIDManager {
