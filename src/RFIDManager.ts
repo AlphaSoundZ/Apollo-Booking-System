@@ -75,7 +75,7 @@ export default class RFIDManager {
 
             const chipInfo = await this.makeApiRequest({ rfid1: uid });
             const statusCode = chipInfo.response;
-            logger.debug("Chip info status:", statusCode);
+            logger.debug("Chip info status:", statusCode, `(${chipInfo.message.trim()})`);
 
             if (statusCode == 1) {
                 this.sendWebSocket("deviceReturned");
@@ -116,7 +116,11 @@ export default class RFIDManager {
                 }
 
                 const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
-                logger.debug("Booking info status:", booking.response);
+                logger.debug(
+                    "Booking info status:",
+                    booking.response,
+                    `(${booking.message.trim()})`,
+                );
 
                 if (booking.response > 2) {
                     this.sendError(booking);
