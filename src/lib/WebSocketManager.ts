@@ -1,12 +1,14 @@
 import { WebSocket } from "ws";
 import logger from "../config/logger";
 
+// Some type definitions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSEvent = { manager: WebSocketManager; data: any; respond: (data: any) => void };
 type WSCallback = (event: WSEvent) => Promise<void>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSRequest = { event: string; data?: any };
 
+// Event listener that can be added to the manager
 class WSEventListener {
     eventName: string;
     callback: WSCallback;
@@ -24,15 +26,21 @@ export default class WebSocketManager {
     private listeners: WSEventListener[] = [];
     private onCloseListener: Array<() => void> = [];
 
+    /**
+     * Initialize the manager
+     * @param ws The websocket the manager is using
+     */
     constructor(ws: WebSocket) {
         this.ws = ws;
 
+        // Setup close listener
         this.ws.on("close", () => {
             for (const listener of this.onCloseListener) {
                 listener();
             }
         });
 
+        // Setup event listeners
         this.ws.on("message", (data) => {
             let req: WSRequest;
             try {
