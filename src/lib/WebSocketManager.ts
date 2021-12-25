@@ -99,10 +99,18 @@ export default class WebSocketManager {
         this.sendJSON({ event: eventName, data: data });
     }
 
+    /**
+     * Add close listener
+     * @param listener lambda event function
+     */
     onclose(listener: () => void) {
         this.onCloseListener.push(listener);
     }
 
+    /**
+     * Add an event listener
+     * @param listener The event listener
+     */
     listen(listener: WSEventListener) {
         this.listeners.push(listener);
     }
