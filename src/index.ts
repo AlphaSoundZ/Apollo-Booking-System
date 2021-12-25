@@ -19,9 +19,12 @@ expressWs(app);
 // Importing routes
 import routes from "./routes";
 
+// Program initialization is async
 (async () => {
     logger.info("Checking server connection...");
     let connectionSuccessful = false;
+
+    // Check for server availability every 15 seconds until working
     while (!connectionSuccessful) {
         try {
             const response = await axios.get(apiUrl);
