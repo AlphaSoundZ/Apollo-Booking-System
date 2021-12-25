@@ -129,11 +129,19 @@ The program does not allow for options to be missing from the configuration as i
 
 **WARNING:** Please make sure that the [configuration](#configuration) is properly set up.
 
-After setting up and checking that all the [prerequisites](#preparing-for-execution) have been met, you can simply execute the program by running the following command in the terminal
+After setting up and checking that all the [prerequisites](#preparing-for-execution) have been met, run the following command
+
+```console
+$ yarn
+```
+
+to install all the required dependencies and then run
 
 ```console
 $ yarn start
 ```
+
+To start the program.
 
 if you want to run the application in debug mode with hot-reloading for development purposes, run it with the following command
 
@@ -169,3 +177,10 @@ The program follows the following structure:
                 Route definitions for the different UI pages
             -   `/client/src/views/UI`  
                 Views for the different pages of the UI
+
+---
+
+<img src="https://matix-media.net/media/logo.svg" style="float:left;margin-right:20px;" height="50px" />
+
+Released under the [MIT License](LICENSE)  
+Copyright &copy; 2021 Max Heilmann
