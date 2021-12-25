@@ -9,6 +9,7 @@ export default class RFIDManager {
     private apiUrl: string;
     private reader: Mfrc522;
     private listening = true;
+    private lastScan: number;
     private lastUid: string;
     private subRoutineRunning = false;
     private runIfSub: (uid: string) => void;
@@ -41,12 +42,22 @@ export default class RFIDManager {
             if (!response.status) return;
 
             const uid = response.data;
-            this.lastUid =
+            const currentUid =
                 uid[0].toString(16) +
                 uid[1].toString(16) +
                 uid[2].toString(16) +
                 uid[3].toString(16);
 
+            if (
+                this.lastScan == currentUid &&
+                Date.now() - this.lastScan < Number.parseInt(process.env.READ_TIMEOUT)
+            ) {
+                logger.debug("Timeout not passed. Skipping");
+                return;
+            }
+
+            this.lastUid = currentUid;
+            this.lastScan = Date.now();
             logger.debug("Card read UID:", this.lastUid);
 
             if (!this.subRoutineRunning) {
@@ -94,7 +105,7 @@ export default class RFIDManager {
         }
     }
 
-    private async makeBooking(uid) {
+    private async makeBooking(uid: string) {
         try {
             this.listening = true;
 
@@ -135,10 +146,10 @@ export default class RFIDManager {
         }
     }
 
-    private catchError(err, message) {
+    private catchError(err: Error, message: string) {
         logger.error(message + ":", err);
         try {
-            this.sendError({ response: 8, message: err });
+            this.sendError({ response: 8, message: err.message });
         } catch (uErr) {
             logger.error("Error occurred while reporting error to UI:", uErr);
         }
