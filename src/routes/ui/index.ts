@@ -6,7 +6,9 @@ import RFIDManager from "../../RFIDManager";
 // Events
 import Ping from "./ping";
 
+// WebSocket endpoint
 export default (ws: WebSocket, req: Request) => {
+    // Create manager from websocket
     const wsManager = new WebSocketManager(ws);
 
     // Register events
