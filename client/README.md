@@ -1,23 +1,23 @@
-# client
+# GHT-Buchungssystem: Client
 
 ## Project setup
-```
-yarn install
+```console
+$ yarn install
 ```
 
 ### Compiles and hot-reloads for development
-```
-yarn serve
+```console
+$ yarn serve
 ```
 
 ### Compiles and minifies for production
-```
-yarn build
+```console
+$ yarn build
 ```
 
 ### Lints and fixes files
-```
-yarn lint
+```console
+$ yarn lint
 ```
 
 ### Customize configuration
