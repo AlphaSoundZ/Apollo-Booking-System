@@ -163,7 +163,7 @@ The program follows the following structure:
             UI initialization code and [vue.js](https://vuejs.org/) type definitions
             -   `/client/src/assets`  
                 Assets such as images used in the UI
-            -   `/client/src/components`
+            -   `/client/src/components`  
                 Components ([vue.js](https://vuejs.org/)) used through out the UI
             -   `/client/src/router`  
                 Route definitions for the different UI pages
