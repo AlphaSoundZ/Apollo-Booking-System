@@ -14,33 +14,50 @@ export default class RFIDManager {
     private subRoutineRunning = false;
     private runIfSub: (uid: string) => void;
 
+    /**
+     * Initialize the manager
+     * @param apiUrl URL of the backend server
+     */
     constructor(apiUrl: string) {
         this.apiUrl = apiUrl;
 
+        // Create spi
         const softSPI = new SoftSPI({
             clock: 23,
             mosi: 19,
             miso: 21,
             client: 24,
         });
+        // Initialize RFID reader
         this.reader = new Mfrc522(softSPI).setResetPin(22);
 
-        setInterval(this.readCycle.bind(this), 250);
+        // Start the read cycle interval
+        setInterval(this.readCycle.bind(this), Number.parseInt(process.env.READ_CYCLE));
         logger.info("Listening for rfid tags");
     }
 
-    private readCycle() {
+    /**
+     * Gets executed every read cycle
+     */
+    private readCycle(): void {
         if (!this.listening) return;
 
+        // Catch any errors occurring during chip read for better resistance
         try {
+            // Reset the reader for new read
             this.reader.reset();
 
+            // Find RFID chip
             let response = this.reader.findCard();
             if (!response) return;
 
+            // Read the chip uid
             response = this.reader.getUid();
+
+            // Return if failed
             if (!response.status) return;
 
+            // Generate UID from chip bytes
             const uid = response.data;
             const currentUid =
                 uid[0].toString(16) +
@@ -48,6 +65,7 @@ export default class RFIDManager {
                 uid[2].toString(16) +
                 uid[3].toString(16);
 
+            // Check for read timeout
             if (
                 this.lastScan == currentUid &&
                 Date.now() - this.lastScan < Number.parseInt(process.env.READ_TIMEOUT)
@@ -56,10 +74,13 @@ export default class RFIDManager {
                 return;
             }
 
+            // Update last scan data
             this.lastUid = currentUid;
             this.lastScan = Date.now();
+
             logger.debug("Card read UID:", this.lastUid);
 
+            // Decide on what routine to run
             if (!this.subRoutineRunning) {
                 this.subRoutine();
             } else {
@@ -70,24 +91,34 @@ export default class RFIDManager {
         }
     }
 
-    private freeReader() {
+    /**
+     * Reset routine
+     */
+    private freeReader(): void {
         this.subRoutineRunning = false;
         this.listening = true;
         this.runIfSub = undefined;
     }
 
-    private async subRoutine() {
+    /**
+     * default first routine
+     */
+    private async subRoutine(): Promise<void> {
+        // Catch error for better resistance
         try {
             this.subRoutineRunning = true;
             this.listening = false;
 
             const uid = this.lastUid;
+            // Update UI
             this.sendWebSocket("gettingChipInfo");
 
+            // Get chip info from server
             const chipInfo = await this.makeApiRequest({ rfid1: uid });
             const statusCode = chipInfo.response;
             logger.debug("Chip info status:", statusCode, `(${chipInfo.message.trim()})`);
 
+            // Decide on next routine step
             if (statusCode == 1) {
                 this.sendWebSocket("deviceReturned");
                 this.freeReader();
@@ -105,19 +136,26 @@ export default class RFIDManager {
         }
     }
 
-    private async makeBooking(uid: string) {
+    /**
+     * Initialize booking routine
+     * @param uid UID of the user
+     */
+    private async makeBooking(uid: string): Promise<void> {
         try {
             this.listening = true;
 
+            // Timeout before logout
             const logoutTimeout = setTimeout(() => {
                 this.sendWebSocket("userLogout");
                 this.freeReader();
                 logger.debug("User automatically logged out");
-            }, 15000);
+            }, Number.parseInt(process.env.LOGOUT_TIMEOUT));
 
+            // Set seconds routine
             this.runIfSub = async (newUid) => {
                 this.listening = false;
 
+                // Check for manual logout and logout if so
                 if (newUid == uid) {
                     this.sendWebSocket("userLogout");
                     this.freeReader();
@@ -126,6 +164,7 @@ export default class RFIDManager {
                     return;
                 }
 
+                // Send booking to server
                 const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
                 logger.debug(
                     "Booking info status:",
@@ -133,11 +172,14 @@ export default class RFIDManager {
                     `(${booking.message.trim()})`,
                 );
 
+                // Check booking success
                 if (booking.response > 2) {
                     this.sendError(booking);
                     this.freeReader();
                     return;
                 }
+
+                // Update UI
                 this.sendWebSocket("bookingCompleted");
                 this.freeReader();
             };
@@ -146,7 +188,12 @@ export default class RFIDManager {
         }
     }
 
-    private catchError(err: Error, message: string) {
+    /**
+     * Pass the error to UI and log
+     * @param err The error thrown
+     * @param message A custom log message
+     */
+    private catchError(err: Error, message: string): void {
         logger.error(message + ":", err);
         try {
             this.sendError({ response: 8, message: err.message });
@@ -155,7 +202,11 @@ export default class RFIDManager {
         }
     }
 
-    private async sendError(req: { response: number; message: string }) {
+    /**
+     * Send error to UI
+     * @param req Server error
+     */
+    private async sendError(req: { response: number; message: string }): Promise<void> {
         let statusCode = req.response;
         if (statusCode < 3) statusCode = 8;
         this.sendWebSocket("error", { code: statusCode, message: req.message });
@@ -170,14 +221,23 @@ export default class RFIDManager {
         ).data;
     }
 
+    /**
+     * Send event to UI
+     * @param eventName Event name for UI
+     * @param data Event data for UI
+     */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private sendWebSocket(eventName: string, data: any = {}) {
+    private sendWebSocket(eventName: string, data: any = {}): void {
         for (const ws of this.webSockets) {
             ws.triggerEvent(eventName, data);
         }
     }
 
-    public addWebSocket(ws: WebSocketManager) {
+    /**
+     * Add a WebSocket to the manager
+     * @param ws WebSocket to be added
+     */
+    public addWebSocket(ws: WebSocketManager): void {
         ws.onclose(() => {
             this.removeWebSocket(ws);
         });
@@ -185,7 +245,11 @@ export default class RFIDManager {
         logger.debug("New ui connection");
     }
 
-    public removeWebSocket(ws: WebSocketManager) {
+    /**
+     * Remove a WebSocket from the manager
+     * @param ws WebSocket to be removed
+     */
+    public removeWebSocket(ws: WebSocketManager): void {
         this.webSockets.splice(this.webSockets.indexOf(ws));
 
         logger.debug("Lost UI connection");
