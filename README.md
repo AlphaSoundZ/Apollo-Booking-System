@@ -108,6 +108,9 @@ $ yarn build
 
 That will first install all required dependencies for the UI and then build the UI into the `client/dist` directory. That directory (and it's content) is required to display the UI.
 
+More build options for the client can be found in here:  
+[/client/README.md](client/README.md)
+
 ## Configuration
 
 There are a few configuration options available, these can be found in `.env.example`. In order to set the configuration, create a new file called `.env` or `.env.local`, in that file place the following options as shown in `.env.example`
