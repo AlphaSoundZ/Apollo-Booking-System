@@ -8,7 +8,7 @@
     "private": true,
     "scripts": {
         "dev": "nodemon",
-        "start": "ts-node ."
+        "start": "ts-node --transpile-only ."
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
