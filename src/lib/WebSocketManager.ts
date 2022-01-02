@@ -49,9 +49,10 @@ export default class WebSocketManager {
                 if (!response.event) throw new Error("No event specified");
                 req = response;
             } catch (err) {
+                // Send error to websocket if can not parse
                 logger.warn("Received invalid JSON object from websocket:", err);
                 this.sendJSON({
-                    type: "response",
+                    type: "error",
                     success: false,
                     error: "INVALID_REQUEST",
                     message: "Received invalid JSON object",
