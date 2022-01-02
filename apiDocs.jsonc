@@ -3,7 +3,7 @@
         "vorname": "Paul",
         "nachname": "Peter",
         "user_id": "1",
-        "klasse": "10b"
+        "klasse": "10b" // Oder 1 für Lehrer, welcher unendlich viele Geräte ausleihen kann
     },
     "device": {
         "device_type": "Ipad",
