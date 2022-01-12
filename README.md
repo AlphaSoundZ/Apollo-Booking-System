@@ -48,8 +48,9 @@ In order to return a device, the device chip/sticker/card just needs to be place
 To run the program, a Raspberry Pi with a working internet connection is required.
 
 Also, an rc522 RFID reader is required which needs to be connected to the Raspberry Pi in following order
+Also, a buzzer is required. This buzzer needs to have 5V and needs to be active. This buzzer does not need a DC to DC regulator (5V to 3.3V) when connected to the Raspberry Pi 3 (Modell B).
 
-> ![Raspberry Pi RFID rc522 reader connection](https://imgur.com/Une5foX.png)  
+> ![Raspberry Pi RFID rc522 reader connection and buzzer](https://github.com/firsttris/mfrc522-rpi/raw/master/wiki/mfrc522-node.png)  
 > _Source: https://www.npmjs.com/package/mfrc522-rpi_
 
 Despite the image suggesting that the pin configuration is for an Raspberry Pi 2, it is also tested to be working with an Raspberry Pi 3 (Modell B)
