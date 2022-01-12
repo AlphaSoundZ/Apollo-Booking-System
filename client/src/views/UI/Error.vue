@@ -19,6 +19,24 @@ export default Vue.extend({
         message: {
             default: "",
         },
+        redirectTimeout: {
+            default: -1,
+        },
+        redirectTarget: {
+            default: "",
+        },
+    },
+    data() {
+        return {
+            redirectId: -1,
+        };
+    },
+    mounted() {
+        if ((this as any).redirectTimeout != -1) {
+            (this as any).redirectId = setTimeout(() => {
+                (this as any).$router.replace({ name: (this as any).redirectTarget });
+            }, (this as any).redirectTimeout);
+        }
     },
 });
 </script>

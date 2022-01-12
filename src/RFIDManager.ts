@@ -14,6 +14,8 @@ export default class RFIDManager {
     private subRoutineRunning = false;
     private runIfSub: (uid: string) => void;
     private readTimeout = Number.parseInt(process.env.READ_TIMEOUT);
+    private isTeacher = false;
+    private setLogoutTimer: () => {};
 
     /**
      * Initialize the manager
@@ -98,6 +100,7 @@ export default class RFIDManager {
      */
     private freeReader(): void {
         this.subRoutineRunning = false;
+        this.isTeacher = false;
         this.listening = true;
         this.runIfSub = undefined;
     }
@@ -123,14 +126,17 @@ export default class RFIDManager {
             // Decide on next routine step
             if (statusCode == 1) {
                 this.sendWebSocket("deviceReturned");
+                if (this.isTeacher) return;
                 this.freeReader();
                 return;
             } else if (statusCode > 2 || statusCode < 1) {
-                this.sendError(chipInfo);
+                this.sendError({...chipInfo, redirectTarget: "Waiting"});
                 this.freeReader();
                 return;
             } else {
-                this.sendWebSocket("userInfo", { user: chipInfo.user });
+                if (chipInfo.user.klasse == "Lehrer") this.isTeacher = true;
+                console.log("isTeacher:", this.isTeacher);
+                this.sendWebSocket("userInfo", { user: {...chipInfo.user, isTeacher: this.isTeacher} });
                 this.makeBooking(uid);
             }
         } catch (err) {
@@ -145,13 +151,19 @@ export default class RFIDManager {
     private async makeBooking(uid: string): Promise<void> {
         try {
             this.listening = true;
-
+            
+            let logoutTimeout;
+            this.setLogoutTimeout = () => {
+                logoutTimeout = setTimeout(() => {
+                    if (logoutTimeout) clearTimeout(logoutTimeout);
+                    this.sendWebSocket("userLogout");
+                    this.freeReader();
+                    logger.debug("User automatically logged out");
+                }, Number.parseInt(process.env.LOGOUT_TIMEOUT));
+            };
+            
             // Timeout before logout
-            const logoutTimeout = setTimeout(() => {
-                this.sendWebSocket("userLogout");
-                this.freeReader();
-                logger.debug("User automatically logged out");
-            }, Number.parseInt(process.env.LOGOUT_TIMEOUT));
+            if (!this.isTeacher) setLogoutTimeout();
 
             // Set seconds routine
             this.runIfSub = async (newUid) => {
@@ -167,6 +179,7 @@ export default class RFIDManager {
                 }
 
                 // Send booking to server
+                this.sendWebSocket("bookingDevice");
                 const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
                 logger.debug(
                     "Booking info status:",
@@ -176,29 +189,32 @@ export default class RFIDManager {
 
                 // Check booking success
                 if (booking.response > 2) {
-                    this.sendError(booking);
+                    if (!this.isTeacher) setLogoutTimeout();
+                    this.sendError({...booking, redirectTarget: "User"});
                     this.freeReader();
                     return;
                 }
 
                 // Update UI
                 this.sendWebSocket("bookingCompleted");
+                clearTimeout(logoutTimeout);
                 this.freeReader();
             };
         } catch (err) {
-            this.catchError(err, "Error occurred while booking device");
+            this.catchError(err, "Error occurred while booking device", "User");
         }
     }
+
 
     /**
      * Pass the error to UI and log
      * @param err The error thrown
      * @param message A custom log message
      */
-    private catchError(err: Error, message: string): void {
+    private catchError(err: Error, message: string, redirectTarget = "Waiting"): void {
         logger.error(message + ":", err);
         try {
-            this.sendError({ response: 8, message: err.message });
+            this.sendError({ response: 8, message: err.message, redirectTarget: redirectTarget });
         } catch (uErr) {
             logger.error("Error occurred while reporting error to UI:", uErr);
         }
@@ -208,10 +224,10 @@ export default class RFIDManager {
      * Send error to UI
      * @param req Server error
      */
-    private async sendError(req: { response: number; message: string }): Promise<void> {
+    private async sendError(req: { response: number; message: string; redirectTarget: string }): Promise<void> {
         let statusCode = req.response;
         if (statusCode < 3) statusCode = 8;
-        this.sendWebSocket("error", { code: statusCode, message: req.message });
+        this.sendWebSocket("error", { code: statusCode, message: req.message, redirectTarget: req.redirectTarget });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

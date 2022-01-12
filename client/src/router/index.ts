@@ -19,31 +19,31 @@ const routes: Array<RouteConfig> = [
                 path: "",
                 name: "Waiting",
                 component: Waiting,
-                props: true
+                props: true,
             },
             {
                 path: "user",
                 name: "User",
                 component: User,
-                props: true
+                props: true,
             },
             {
                 path: "loading",
                 name: "Loading",
                 component: Loading,
-                props: true
+                props: true,
             },
             {
                 path: "error",
                 name: "Error",
                 component: Error,
-                props: true
+                props: true,
             },
             {
                 path: "success",
                 name: "Success",
                 component: Success,
-                props: true
+                props: true,
             },
         ],
     },
