@@ -24,7 +24,7 @@ new Vue({
 
             let url: string;
             if (devMode) {
-                url = "ws://192.168.0.93:8080/ws/ui";
+                url = "ws://127.0.0.1:8081/ws/ui";
             } else {
                 url = "ws://" + window.location.host + "/ws/ui";
             }
@@ -44,10 +44,17 @@ new Vue({
                 }, 15000);
             }
 
-            this.websocket.onclose = (ev) => {
-                console.log("Connection lost:", ev.reason, "Reconnecting");
+            const reconnect = () => {
+                if (this.websocket) {
+                    this.websocket.close();
+                }
+                console.log("Connection lost, reconnecting");
                 this.websocketSetup();
             }
+            this.websocket.onclose = reconnect;
+            this.websocket.onerror = (ev) => {
+                console.log("WebSocket error",);
+            };
 
             this.websocket.onmessage = (ev) => {
                 const res = JSON.parse(ev.data)
@@ -60,16 +67,16 @@ new Vue({
                     console.log("Event received:", res.event, "data:", res.data);
                     switch (res.event) {
                         case "gettingChipInfo":
-                            this.navPage("Loading", {message: "Lade Daten"})
+                            this.navPage("Loading", {message: "Lade Daten"});
                             break;
                         case "userLogout":
                             this.navPage("Waiting");
                             break;
                         case "userInfo":
-                            this.navPage("userInfo", {username: res.data.user.vorname + res.data.user.nachname, history: res.data.user.history})
+                            this.navPage("User", {username: res.data.user.vorname + " " + res.data.user.nachname, history: res.data.user.history});
                             break;
                         case "error":
-                            this.navPage("Error", {message: res.data.message})
+                            this.navPage("Error", {message: res.data.message});
                             break;
                     }
                 }
@@ -78,7 +85,7 @@ new Vue({
             }
         },
         navPage(pageName: string, data: any = {}) {
-            this.$router.push({name: pageName, params: data});
+            this.$router.replace({name: pageName, params: data});
         }
     }
 }).$mount("#app");

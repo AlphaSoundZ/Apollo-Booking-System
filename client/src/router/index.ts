@@ -13,6 +13,7 @@ const routes: Array<RouteConfig> = [
     {
         path: "/ui",
         component: UI,
+        props: true,
         children: [
             {
                 path: "",

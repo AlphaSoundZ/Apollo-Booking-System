@@ -29,7 +29,7 @@ export default class RFIDManager {
             client: 24,
         });
         // Initialize RFID reader
-        this.reader = new Mfrc522(softSPI).setResetPin(22);
+        this.reader = new Mfrc522(softSPI).setResetPin(22).setBuzzerPin(18);
 
         // Start the read cycle interval
         setInterval(this.readCycle.bind(this), Number.parseInt(process.env.READ_CYCLE));

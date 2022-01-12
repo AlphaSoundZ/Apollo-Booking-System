@@ -1,7 +1,7 @@
 <template>
     <div class="user">
         <div class="username">
-            <span class="mi icon">account_circle</span>
+            <span class="mi icon" :style="{ color: stringToColor(username) }">account_circle</span>
             {{ username }}
         </div>
 
@@ -11,7 +11,7 @@
                     message="Zum Ausleihen"
                     header="Halte nun ein Gerät an das Lesegerät"
                     size="67"
-                    :class="{ faded: hasRunningBooking }"
+                    :class="{ faded: !canBook }"
                 >
                     <combined-icon border-radius="8px" added-padding=".05em">
                         <span class="mi">nfc</span>
@@ -38,14 +38,14 @@
         <div class="infos" v-if="history.length > 0" ref="infos">
             <h2>Zuletzt Ausgeliehen</h2>
             <div class="recently-booked">
-                <div class="booking" v-for="booking in history" :key="booking.ID">
+                <div class="booking" v-for="booking in history" :key="booking.device_id">
                     <combined-icon
-                        v-if="!booking.returnedAt"
+                        v-if="!booking.time_stamp_2"
                         :left="true"
                         class="device"
                         background="#f3f4f9"
                     >
-                        <device-icon :device-type="booking.device.type.type" />
+                        <device-icon :device-type="booking.device_type" />
                         <template v-slot:added>
                             <span class="mi">schedule</span>
                         </template>
@@ -96,25 +96,34 @@ export default Vue.extend({
         history: {
             default: () => [
                 {
-                    ID: 1,
-                    device: {
-                        type: {
-                            name: "Microsoft Surface Laptop",
-                            type: "laptop",
-                        },
-                    },
-                    bookedAt: "2021-11-06 18:52:00",
-                    returnedAt: "2021-11-06 18:53:00",
+                    device_id: 1,
+                    device_type: "Ipad",
+                    time_stamp_1: "2021-11-06 18:52:00",
+                    time_stamp_2: "2021-11-06 18:53:00",
                 },
             ],
         },
-        hasRunningBooking: {
-            default: true,
+    },
+    computed: {
+        canBook(): boolean {
+            return true;
         },
     },
     methods: {
         dayjs,
         duration: dayjs.duration,
+        stringToColor(str: string) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            var colour = "#";
+            for (var i = 0; i < 3; i++) {
+                var value = (hash >> (i * 8)) & 0xff;
+                colour += ("00" + value.toString(16)).substr(-2);
+            }
+            return colour;
+        },
     },
 });
 </script>

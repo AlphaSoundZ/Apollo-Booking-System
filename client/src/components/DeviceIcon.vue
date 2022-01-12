@@ -1,5 +1,5 @@
 <template>
-    <span class="mi">{{ mapping[deviceType] }}</span>
+    <span class="mi">{{ mapping[deviceType.toLowerCase()] }}</span>
 </template>
 
 <script lang="ts">
@@ -13,6 +13,7 @@ export default Vue.extend({
             mapping: {
                 laptop: "laptop",
                 smartphone: "smartphone",
+                ipad: "tablet_mac",
             },
         };
     },
