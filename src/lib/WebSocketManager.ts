@@ -97,7 +97,7 @@ export default class WebSocketManager {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     triggerEvent(eventName: string, data: any) {
-        this.sendJSON({ event: eventName, data: data });
+        this.sendJSON({ type: "event", event: eventName, data: data });
     }
 
     /**

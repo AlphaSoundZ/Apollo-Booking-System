@@ -13,6 +13,7 @@ export default class RFIDManager {
     private lastUid: string;
     private subRoutineRunning = false;
     private runIfSub: (uid: string) => void;
+    private readTimeout = Number.parseInt(process.env.READ_TIMEOUT);
 
     /**
      * Initialize the manager
@@ -66,9 +67,10 @@ export default class RFIDManager {
                 uid[3].toString(16);
 
             // Check for read timeout
+            const timeBetween = Date.now() - this.lastScan;
             if (
-                this.lastScan == currentUid &&
-                Date.now() - this.lastScan < Number.parseInt(process.env.READ_TIMEOUT)
+                this.lastUid == currentUid &&
+                timeBetween < this.readTimeout
             ) {
                 logger.debug("Timeout not passed. Skipping");
                 return;
@@ -159,7 +161,7 @@ export default class RFIDManager {
                 if (newUid == uid) {
                     this.sendWebSocket("userLogout");
                     this.freeReader();
-                    clearInterval(logoutTimeout);
+                    clearTimeout(logoutTimeout);
                     logger.debug("User logged out");
                     return;
                 }
