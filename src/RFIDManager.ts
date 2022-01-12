@@ -49,7 +49,7 @@ export default class RFIDManager {
 
             // Find RFID chip
             let response = this.reader.findCard();
-            if (!response) return;
+            if (!response || !response.status) return;
 
             // Read the chip uid
             response = this.reader.getUid();
