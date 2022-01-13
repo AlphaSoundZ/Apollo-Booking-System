@@ -47,8 +47,8 @@ In order to return a device, the device chip/sticker/card just needs to be place
 
 To run the program, a Raspberry Pi with a working internet connection is required.
 
-Also, an rc522 RFID reader is required which needs to be connected to the Raspberry Pi in following order but the 3.3v pin is direct to the Rasperry connected, so we need no DC to DC regulator (5V to 3.3V).
-Also, a buzzer is required. This buzzer needs 5V and needs to be active, when connected to the Raspberry Pi 3 (Modell B) direct. instead of the s8050 transistor we used the bc547 because we still had it and a 1kΩ resistor.
+Also, an rc522 RFID reader is required which needs to be connected to the Raspberry Pi in following order except the 3.3v pin is directly connected to the Rasperry Pi, so we need no DC to DC regulator (5V to 3.3V).
+Also, a buzzer is required. This buzzer needs 5V and needs to be active, when connected to the Raspberry Pi 3 (Modell B) directly. Instead of the s8050 transistor we used the bc547 because we still had it and a 1kΩ resistor.
 
 > ![Raspberry Pi RFID rc522 reader connection and buzzer](https://github.com/firsttris/mfrc522-rpi/raw/master/wiki/mfrc522-node.png)  
 > _Source: https://www.npmjs.com/package/mfrc522-rpi_
