@@ -1,28 +1,29 @@
-import WebSocketManager from "./lib/WebSocketManager";
 import * as SoftSPI from "rpi-softspi";
 import * as Mfrc522 from "mfrc522-rpi";
 import logger from "./config/logger";
-import axios from "axios";
+import ScanHandler from "./ScanHandler";
+import WebSocketManager from "./lib/websockets/WebSocketManager";
+import API from "./lib/API";
 
 export default class RFIDManager {
-    private webSockets: WebSocketManager[] = [];
-    private apiUrl: string;
+    private static READ_TIMEOUT = Number.parseInt(process.env.READ_TIMEOUT);
+    private static READ_CYCLE_LENGTH = Number.parseInt(process.env.READ_CYCLE);
+
+    public readonly socketManager = new WebSocketManager();
+    public readonly api: API;
+
     private reader: Mfrc522;
     private listening = true;
     private lastScan: number;
     private lastUid: string;
-    private subRoutineRunning = false;
-    private runIfSub: (uid: string) => void;
-    private readTimeout = Number.parseInt(process.env.READ_TIMEOUT);
-    private isTeacher = false;
-    private setLogoutTimer: () => {};
+    private lastHandler: ScanHandler;
 
     /**
      * Initialize the manager
      * @param apiUrl URL of the backend server
      */
-    constructor(apiUrl: string) {
-        this.apiUrl = apiUrl;
+    constructor(api: API) {
+        this.api = api;
 
         // Create spi
         const softSPI = new SoftSPI({
@@ -35,14 +36,18 @@ export default class RFIDManager {
         this.reader = new Mfrc522(softSPI).setResetPin(22).setBuzzerPin(18);
 
         // Start the read cycle interval
-        setInterval(this.readCycle.bind(this), Number.parseInt(process.env.READ_CYCLE));
+        this.startReadCycle();
         logger.info("Listening for rfid tags");
+    }
+
+    private startReadCycle() {
+        setInterval(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
     }
 
     /**
      * Gets executed every read cycle
      */
-    private readCycle(): void {
+    private readCycle() {
         if (!this.listening) return;
 
         // Catch any errors occurring during chip read for better resistance
@@ -70,10 +75,7 @@ export default class RFIDManager {
 
             // Check for read timeout
             const timeBetween = Date.now() - this.lastScan;
-            if (
-                this.lastUid == currentUid &&
-                timeBetween < this.readTimeout
-            ) {
+            if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) {
                 logger.debug("Timeout not passed. Skipping");
                 return;
             }
@@ -85,191 +87,23 @@ export default class RFIDManager {
             logger.debug("Card read UID:", this.lastUid);
 
             // Decide on what routine to run
-            if (!this.subRoutineRunning) {
-                this.subRoutine();
+            if (
+                !this.lastHandler ||
+                (this.lastHandler && !this.lastHandler.active && !this.lastHandler.busy)
+            ) {
+                this.lastHandler = new ScanHandler(this.socketManager, this.api);
+                this.lastHandler.run(currentUid);
+            } else if (this.lastHandler && this.lastHandler.active && !this.lastHandler.busy) {
+                this.lastHandler.moreInput(currentUid);
+            } else if (this.lastHandler && this.lastHandler.active && this.lastHandler.busy) {
+                // Skipping, handler is currently busy
             } else {
-                if (this.runIfSub) this.runIfSub(this.lastUid);
+                logger.warn("Unexpected edge case occurred");
+                this.lastHandler?.cancel();
+                this.lastHandler = null;
             }
         } catch (err) {
-            this.catchError(err, "Error occurred while reading uid");
+            this.socketManager.catchError(err, "Error occurred while reading uid");
         }
-    }
-
-    /**
-     * Reset routine
-     */
-    private freeReader(): void {
-        this.subRoutineRunning = false;
-        this.isTeacher = false;
-        this.listening = true;
-        this.runIfSub = undefined;
-    }
-
-    /**
-     * default first routine
-     */
-    private async subRoutine(): Promise<void> {
-        // Catch error for better resistance
-        try {
-            this.subRoutineRunning = true;
-            this.listening = false;
-
-            const uid = this.lastUid;
-            // Update UI
-            this.sendWebSocket("gettingChipInfo");
-
-            // Get chip info from server
-            const chipInfo = await this.makeApiRequest({ rfid1: uid });
-            const statusCode = chipInfo.response;
-            logger.debug("Chip info status:", statusCode, `(${chipInfo.message.trim()})`);
-
-            // Decide on next routine step
-            if (statusCode == 1) {
-                this.sendWebSocket("deviceReturned");
-                if (this.isTeacher) return;
-                this.freeReader();
-                return;
-            } else if (statusCode > 2 || statusCode < 1) {
-                this.sendError({...chipInfo, redirectTarget: "Waiting"});
-                this.freeReader();
-                return;
-            } else {
-                if (chipInfo.user.klasse == "Lehrer") this.isTeacher = true;
-                console.log("isTeacher:", this.isTeacher);
-                this.sendWebSocket("userInfo", { user: {...chipInfo.user, isTeacher: this.isTeacher} });
-                this.makeBooking(uid);
-            }
-        } catch (err) {
-            this.catchError(err, "Error occurred while checking uid");
-        }
-    }
-
-    /**
-     * Initialize booking routine
-     * @param uid UID of the user
-     */
-    private async makeBooking(uid: string): Promise<void> {
-        try {
-            this.listening = true;
-            
-            let logoutTimeout;
-            this.setLogoutTimeout = () => {
-                logoutTimeout = setTimeout(() => {
-                    if (logoutTimeout) clearTimeout(logoutTimeout);
-                    this.sendWebSocket("userLogout");
-                    this.freeReader();
-                    logger.debug("User automatically logged out");
-                }, Number.parseInt(process.env.LOGOUT_TIMEOUT));
-            };
-            
-            // Timeout before logout
-            if (!this.isTeacher) setLogoutTimeout();
-
-            // Set seconds routine
-            this.runIfSub = async (newUid) => {
-                this.listening = false;
-
-                // Check for manual logout and logout if so
-                if (newUid == uid) {
-                    this.sendWebSocket("userLogout");
-                    this.freeReader();
-                    clearTimeout(logoutTimeout);
-                    logger.debug("User logged out");
-                    return;
-                }
-
-                // Send booking to server
-                this.sendWebSocket("bookingDevice");
-                const booking = await this.makeApiRequest({ rfid1: uid, rfid2: newUid });
-                logger.debug(
-                    "Booking info status:",
-                    booking.response,
-                    `(${booking.message.trim()})`,
-                );
-
-                // Check booking success
-                if (booking.response > 2) {
-                    if (!this.isTeacher) setLogoutTimeout();
-                    this.sendError({...booking, redirectTarget: "User"});
-                    this.freeReader();
-                    return;
-                }
-
-                // Update UI
-                this.sendWebSocket("bookingCompleted");
-                clearTimeout(logoutTimeout);
-                this.freeReader();
-            };
-        } catch (err) {
-            this.catchError(err, "Error occurred while booking device", "User");
-        }
-    }
-
-
-    /**
-     * Pass the error to UI and log
-     * @param err The error thrown
-     * @param message A custom log message
-     */
-    private catchError(err: Error, message: string, redirectTarget = "Waiting"): void {
-        logger.error(message + ":", err);
-        try {
-            this.sendError({ response: 8, message: err.message, redirectTarget: redirectTarget });
-        } catch (uErr) {
-            logger.error("Error occurred while reporting error to UI:", uErr);
-        }
-    }
-
-    /**
-     * Send error to UI
-     * @param req Server error
-     */
-    private async sendError(req: { response: number; message: string; redirectTarget: string }): Promise<void> {
-        let statusCode = req.response;
-        if (statusCode < 3) statusCode = 8;
-        this.sendWebSocket("error", { code: statusCode, message: req.message, redirectTarget: req.redirectTarget });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private async makeApiRequest(data: any) {
-        return (
-            await axios.get(this.apiUrl + "?" + new URLSearchParams(data).toString(), {
-                responseType: "json",
-            })
-        ).data;
-    }
-
-    /**
-     * Send event to UI
-     * @param eventName Event name for UI
-     * @param data Event data for UI
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private sendWebSocket(eventName: string, data: any = {}): void {
-        for (const ws of this.webSockets) {
-            ws.triggerEvent(eventName, data);
-        }
-    }
-
-    /**
-     * Add a WebSocket to the manager
-     * @param ws WebSocket to be added
-     */
-    public addWebSocket(ws: WebSocketManager): void {
-        ws.onclose(() => {
-            this.removeWebSocket(ws);
-        });
-        this.webSockets.push(ws);
-        logger.debug("New ui connection");
-    }
-
-    /**
-     * Remove a WebSocket from the manager
-     * @param ws WebSocket to be removed
-     */
-    public removeWebSocket(ws: WebSocketManager): void {
-        this.webSockets.splice(this.webSockets.indexOf(ws));
-
-        logger.debug("Lost UI connection");
     }
 }

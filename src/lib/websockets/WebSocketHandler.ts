@@ -1,9 +1,9 @@
 import { WebSocket } from "ws";
-import logger from "../config/logger";
+import logger from "../../config/logger";
 
 // Some type definitions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WSEvent = { manager: WebSocketManager; data: any; respond: (data: any) => void };
+type WSEvent = { manager: WebSocketHandler; data: any; respond: (data: any) => void };
 type WSCallback = (event: WSEvent) => Promise<void>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WSRequest = { event: string; data?: any };
@@ -21,7 +21,7 @@ class WSEventListener {
 
 export { WSCallback, WSEvent, WSEventListener, WSRequest };
 
-export default class WebSocketManager {
+export default class WebSocketHandler {
     ws: WebSocket;
     private listeners: WSEventListener[] = [];
     private onCloseListener: Array<() => void> = [];
@@ -91,13 +91,21 @@ export default class WebSocketManager {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sendJSON(value: any) {
-        this.ws.send(JSON.stringify(value));
+    sendJSON(value: any): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.ws.send(JSON.stringify(value), (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    triggerEvent(eventName: string, data: any) {
-        this.sendJSON({ type: "event", event: eventName, data: data });
+    async triggerEvent(eventName: string, data: any) {
+        await this.sendJSON({ type: "event", event: eventName, data: data });
     }
 
     /**

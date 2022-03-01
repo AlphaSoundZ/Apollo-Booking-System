@@ -1,4 +1,4 @@
-import { WSEventListener } from "../../lib/WebSocketManager";
+import { WSEventListener } from "../../lib/websockets/WebSocketHandler";
 
 // Ping event
 export default new WSEventListener("ping", async (event) => {
