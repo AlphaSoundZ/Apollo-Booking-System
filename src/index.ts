@@ -6,7 +6,6 @@ dotenv.config();
 import * as express from "express";
 import * as cors from "cors";
 import * as expressWs from "express-ws";
-import axios from "axios";
 import logger from "./config/logger";
 import RFIDManager from "./RFIDManager";
 
