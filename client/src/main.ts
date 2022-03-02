@@ -115,7 +115,6 @@ new Vue({
                             break;
                         }
                         case "error": {
-                            console.log(event);
                             this.triggerUIStateEvent(
                                 {
                                     state: UIState.ERROR,
@@ -133,20 +132,23 @@ new Vue({
             };
         },
         triggerUIStateEvent(event: UIStateEvent, returnDelay = 3000) {
+            if (this.lastRedirectTimeout != -1) clearTimeout(this.lastRedirectTimeout);
+
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
+            if (event.state == UIState.USER_LOGOUT) event.returnTarget = ReturnTarget.HOME;
+
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
-                if (this.lastRedirectTimeout != -1) clearTimeout(this.lastRedirectTimeout);
                 this.lastRedirectTimeout = setTimeout(() => {
                     switch (event.returnTarget) {
-                        case ReturnTarget.HOME: {
-                            this.navPage(UIState.HOME.pageName);
-                            break;
-                        }
                         case ReturnTarget.USER_HOME: {
                             if (this.lastUser)
                                 this.navPage(UIState.USER_INFO.pageName, this.lastUser);
                             else this.navPage(UIState.HOME.pageName);
+                            break;
+                        }
+                        default: {
+                            this.navPage(UIState.HOME.pageName);
                             break;
                         }
                     }
