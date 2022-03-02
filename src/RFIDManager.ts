@@ -75,10 +75,7 @@ export default class RFIDManager {
 
             // Check for read timeout
             const timeBetween = Date.now() - this.lastScan;
-            if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) {
-                logger.debug("Timeout not passed. Skipping");
-                return;
-            }
+            if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) return;
 
             // Update last scan data
             this.lastUid = currentUid;
