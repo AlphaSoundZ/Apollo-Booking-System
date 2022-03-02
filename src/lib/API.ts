@@ -3,7 +3,7 @@ import axios from "axios";
 interface RawAPIResponse {
     response: string;
     user: null | {
-        class: string;
+        klasse: string;
     };
 }
 
@@ -55,7 +55,7 @@ export interface APIUser {
     lastname: string;
     user_id: number;
     class: string;
-    teacher: boolean;
+    teacher?: boolean;
     history: Array<unknown> | null;
 }
 
@@ -98,7 +98,7 @@ export default class API {
         );
         if (
             (response as RawAPIResponse).user &&
-            (response as RawAPIResponse).user.class == "Lehrer"
+            (response as RawAPIResponse).user.klasse == "Lehrer"
         )
             (response as any).user.teacher = true;
 
