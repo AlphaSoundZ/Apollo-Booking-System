@@ -16,6 +16,7 @@ export default class UIState {
         message: "Erfolgreich abgemeldet.",
     });
     public static HOME = new UIState("home", "Waiting");
+    public static ERROR = new UIState("error", "Error");
 
     public static getByIdentifier(identifier: string) {
         const STATES: Array<UIState> = [

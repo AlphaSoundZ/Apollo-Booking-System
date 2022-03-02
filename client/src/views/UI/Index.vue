@@ -148,10 +148,11 @@ img.spinner-icon {
     transition: background-color 0.5s;
 
     .mi {
-        font-size: 2rem;
+        font-size: 3rem;
         margin-right: 1rem;
     }
     .description {
+        font-size: 1.5rem;
         font-weight: 600;
     }
 

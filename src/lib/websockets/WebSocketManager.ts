@@ -62,7 +62,7 @@ export default class WebSocketManager {
         await this.send("error", {
             code: error.response.identifier,
             message: error.message,
-            redirectTarget: error.returnTarget,
+            returnTarget: error.returnTarget,
         });
     }
 

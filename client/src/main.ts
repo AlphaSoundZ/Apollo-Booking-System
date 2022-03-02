@@ -21,6 +21,16 @@ interface Root {
     connectedSince: number;
 }
 
+class Event {
+    public name: string;
+    public data?: any;
+
+    constructor(name: string, data?: any) {
+        this.name = name;
+        this.data = data;
+    }
+}
+
 interface UIStateEvent {
     state: UIState;
     returnTarget?: ReturnTarget;
@@ -34,7 +44,7 @@ new Vue({
         websocket: null,
         lastUser: null,
         connectionStatus: ConnectionStatus.CONNECTING,
-        connectedSince: 0,
+        connectedSince: new Date().getTime(),
     } as Root,
     mounted() {
         this.websocketSetup();
@@ -91,14 +101,29 @@ new Vue({
                     clearTimeout(pingTimeout);
                     return;
                 }
-                console.log(res);
                 if (res.type == "event") {
-                    console.log("Event received:", res.event, "data:", res.data);
+                    const event = new Event(res.event, res.data);
 
-                    if (res.event == "uistate") {
-                        const event = res.data;
-                        event.state = UIState.getByIdentifier(event.state);
-                        this.triggerUIStateEvent(event as UIStateEvent);
+                    switch (event.name) {
+                        case "uistate": {
+                            const event = res.data;
+                            event.state = UIState.getByIdentifier(event.state);
+                            this.triggerUIStateEvent(event as UIStateEvent);
+
+                            break;
+                        }
+                        case "error": {
+                            console.log(event);
+                            this.triggerUIStateEvent(
+                                {
+                                    state: UIState.ERROR,
+                                    returnTarget: event.data.returnTarget,
+                                    data: { message: event.data.message },
+                                },
+                                5000,
+                            );
+                            break;
+                        }
                     }
                 }
 
@@ -109,7 +134,9 @@ new Vue({
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
+                console.log("Return target is set");
                 setTimeout(() => {
+                    console.log("Triggering return target:", event.returnTarget);
                     switch (event.returnTarget) {
                         case ReturnTarget.HOME: {
                             this.navPage(UIState.HOME.pageName);
