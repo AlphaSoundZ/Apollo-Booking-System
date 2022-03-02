@@ -99,7 +99,6 @@ export default class RFIDManager {
                 this.lastHandler?.cancel();
                 this.lastHandler = null;
             }
-            logger.debug("Current handler:", this.lastHandler);
         } catch (err) {
             this.socketManager.catchError(err, "Error occurred while reading uid");
         }
