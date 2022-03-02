@@ -1,5 +1,9 @@
 <template>
     <div id="app" :class="{ 'mouse-hidden': mouseHidden }" ref="application">
+        <div class="connection-status">
+            <template v-if="$root.connected"> connected </template>
+            <template v-else> disconnected </template>
+        </div>
         <div class="branding">
             <img src="@/assets/img/school-logo.png" alt="" />
         </div>
@@ -14,6 +18,7 @@ export default Vue.extend({
     data() {
         return {
             mouseHidden: false,
+            connected: false,
         };
     },
     methods: {

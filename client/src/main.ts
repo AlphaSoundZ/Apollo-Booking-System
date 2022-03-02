@@ -13,19 +13,18 @@ new Vue({
         websocket: null,
         pingTimeout: 0,
         lastUser: null,
-    } as { websocket: null | WebSocket; pingTimeout: number },
+        connected: false,
+    } as { websocket: null | WebSocket; pingTimeout: number; connected: boolean },
     mounted() {
         this.websocketSetup();
     },
     methods: {
         websocketSetup() {
-            try {
-                this.navPage("Loading", { message: "Verbinde mit Server" });
-            } catch (err) {
-                //
-            }
-
+            // Check for dev mode
             const devMode = process.env.NODE_ENV === "development";
+
+            this.connected = false;
+            this.navPage("Waiting");
 
             let url: string;
             if (devMode) {
@@ -37,28 +36,26 @@ new Vue({
             console.log("Opening websocket on:", url);
             this.websocket = new WebSocket(url);
 
+            // Ping to check if server is responsive
             this.websocket.onopen = () => {
-                this.navPage("Waiting");
                 console.log("Websocket connected");
+                this.connected = true;
                 setInterval(() => {
                     this.websocket?.send(JSON.stringify({ type: "event", event: "ping" }));
                     this.pingTimeout = setTimeout(() => {
-                        console.log("Websocket connection lost! Trying to reconnect");
+                        console.log("No response from connection! Reopening connection");
                         this.websocketSetup();
                     }, 3000);
                 }, 15000);
             };
 
-            const reconnect = () => {
+            // Reconnect when connection ends
+            this.websocket.onclose = () => {
                 if (this.websocket) {
                     this.websocket.close();
                 }
                 console.log("Connection lost, reconnecting");
                 this.websocketSetup();
-            };
-            this.websocket.onclose = reconnect;
-            this.websocket.onerror = (ev) => {
-                console.log("WebSocket error");
             };
 
             this.websocket.onmessage = (ev) => {
@@ -88,18 +85,18 @@ new Vue({
                             (this as any).lastUser = {
                                 username: res.data.user.vorname + " " + res.data.user.nachname,
                                 history: res.data.user.history,
-                            }
+                            };
                             this.navPage("User", (this as any).lastUser);
                             break;
                         case "error":
                             if (res.data.redirectTarget) redirectTarget = res.data.redirectTarget;
-                            
+
                             if (redirectTarget == "User") {
                                 this.navPage("Error", { message: res.data.message });
-                                
+
                                 setTimeout(() => {
                                     this.navPage("User", (this as any).lastUser);
-                                }, 2500);   
+                                }, 2500);
                             } else {
                                 this.navPage("Error", {
                                     message: res.data.message,
@@ -107,7 +104,7 @@ new Vue({
                                     redirectTarget: redirectTarget,
                                 });
                             }
-                            
+
                             break;
                         case "bookingCompleted":
                             this.navPage("Success", {
@@ -117,7 +114,7 @@ new Vue({
                             if ((this as any).lastUser.isTeacher) {
                                 setTimeout(() => {
                                     this.navPage("User", (this as any).lastUser);
-                                }, 2500);   
+                                }, 2500);
                             }
                             break;
                         case "deviceReturned":
@@ -134,7 +131,10 @@ new Vue({
             };
         },
         navPage(pageName: string, data: any = {}) {
-            this.$router.replace({ name: pageName, params: data });
+            this.$router.replace({ name: pageName, params: data }).catch((err) => {
+                // Silently ignore this error when its an router error. We don't care about redundant navigation
+                if (!err._isRouter) throw err;
+            });
         },
     },
 }).$mount("#app");
