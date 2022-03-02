@@ -36,10 +36,9 @@ export default class ScanHandler {
             this.complete();
             return;
         }
-
         if (info.response == ResponseType.DEVICE_RETURNED) {
             // UUID is device and specified device got returned
-            logger.debug(`Device returned (ID: ${info.device.id})`);
+            logger.info(`Device returned (ID: ${info.device.id})`);
             this.socketManager.sendUI(UIState.DEVICE_RETURNED);
             this.complete();
         } else if (info.response == ResponseType.USER_INFO) {
@@ -95,7 +94,7 @@ export default class ScanHandler {
         }
 
         if (booking.response.error) {
-            logger.debug(`Booking failed (${booking.response.identifier}): ${booking.message}`);
+            logger.info(`Booking failed (${booking.response.identifier}): ${booking.message}`);
             this.socketManager.sendError(
                 new DisplayError(booking.response, booking.message, ReturnTarget.USER_HOME),
             );
@@ -103,7 +102,7 @@ export default class ScanHandler {
             return;
         }
 
-        logger.debug(`Booking completed (ID: ${booking.device.id})`);
+        logger.info(`Booking completed (ID: ${booking.device.id})`);
         this.socketManager.sendUI(
             UIState.DEVICE_BOOKING_COMPLETED,
             {},
