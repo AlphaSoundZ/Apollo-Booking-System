@@ -18,6 +18,7 @@ export class ResponseType {
     public static NOT_A_DEVICE = new ResponseType(7, "NOT_A_DEVICE", true);
     public static NO_UUID_SPECIFIED = new ResponseType(8, "NO_UUID_SPECIFIED", true);
     public static UNEXPECTED_ERROR = new ResponseType(9, "UNEXPECTED_ERROR", true);
+    public static INTERNAL_SERVER_ERROR = new ResponseType(10, "INTERNAL_SERVER_ERROR", true);
 
     private static RESPONSE_TYPES = [
         this.DEVICE_BOOKED,
@@ -30,6 +31,7 @@ export class ResponseType {
         this.NOT_A_DEVICE,
         this.NO_UUID_SPECIFIED,
         this.UNEXPECTED_ERROR,
+        this.INTERNAL_SERVER_ERROR,
     ];
 
     public readonly identifier: number;
