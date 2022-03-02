@@ -84,7 +84,6 @@ export default class RFIDManager {
             logger.debug("Card read UID:", this.lastUid);
 
             // Decide on what routine to run
-            logger.debug("Last handler:", this.lastHandler);
             if (
                 !this.lastHandler ||
                 (this.lastHandler && !this.lastHandler.active && !this.lastHandler.busy)
@@ -100,6 +99,7 @@ export default class RFIDManager {
                 this.lastHandler?.cancel();
                 this.lastHandler = null;
             }
+            logger.debug("Current handler:", this.lastHandler);
         } catch (err) {
             this.socketManager.catchError(err, "Error occurred while reading uid");
         }
