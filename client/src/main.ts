@@ -108,9 +108,10 @@ new Vue({
 
                     switch (event.name) {
                         case "uistate": {
-                            const event = res.data;
-                            event.state = UIState.getByIdentifier(event.state);
-                            this.triggerUIStateEvent(event as UIStateEvent);
+                            const uiEvent = event.data;
+                            uiEvent.state = UIState.getByIdentifier(uiEvent.state);
+                            console.log(uiEvent.state);
+                            this.triggerUIStateEvent(uiEvent as UIStateEvent);
 
                             break;
                         }
