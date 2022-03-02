@@ -134,9 +134,7 @@ new Vue({
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
-                console.log("Return target is set");
                 setTimeout(() => {
-                    console.log("Triggering return target:", event.returnTarget);
                     switch (event.returnTarget) {
                         case ReturnTarget.HOME: {
                             this.navPage(UIState.HOME.pageName);
