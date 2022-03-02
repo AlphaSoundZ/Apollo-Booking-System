@@ -53,18 +53,15 @@
                     <device-icon v-else :device-type="booking.device_type" class="device" />
                     <div>
                         <h4>{{ booking.device_type }}</h4>
-                        <p v-if="!booking.time_stamp_2">
+                        <p v-if="!booking.end">
                             Aktuell Ausgeliehen <br />
-                            Seit dem {{ dayjs(booking.time_stamp_1).format("D.M.YYYY HH:mm") }} Uhr
+                            Seit dem {{ dayjs(booking.begin).format("D.M.YYYY HH:mm") }} Uhr
                         </p>
                         <p v-else>
-                            Vom {{ dayjs(booking.time_stamp_1).format("D.M.YYYY HH:mm") }} Uhr bis
-                            zum
+                            Vom {{ dayjs(booking.begin).format("D.M.YYYY HH:mm") }} Uhr bis zum
                             <br />
-                            {{ dayjs(booking.time_stamp_2).format("D.M.YYYY HH:mm") }} Uhr ({{
-                                duration(
-                                    dayjs(booking.time_stamp_2).diff(dayjs(booking.time_stamp_1)),
-                                ).humanize()
+                            {{ dayjs(booking.end).format("D.M.YYYY HH:mm") }} Uhr ({{
+                                duration(dayjs(booking.end).diff(dayjs(booking.begin))).humanize()
                             }})
                         </p>
                     </div>
@@ -97,14 +94,8 @@ export default Vue.extend({
             },
         },
         history: {
-            default: () => [
-                {
-                    device_id: 1,
-                    device_type: "Ipad",
-                    time_stamp_1: "2021-11-06 18:52:00",
-                    time_stamp_2: "2021-11-06 18:53:00",
-                },
-            ],
+            default: () =>
+                [] as Array<{ device_id: number; device_type: string; begin: string; end: string }>,
         },
     },
     computed: {
