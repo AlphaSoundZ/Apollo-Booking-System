@@ -9,6 +9,8 @@
     "scripts": {
         "dev": "nodemon",
         "start": "ts-node --transpile-only .",
+        "build": "tsc",
+        "run": "node dist/index.js",
         "mockserver": "ts-node --transpile-only mockupServer.ts"
     },
     "devDependencies": {
