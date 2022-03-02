@@ -26,11 +26,11 @@ new Vue({
             this.connected = false;
             this.navPage("Waiting");
 
-            let url: string;
-            if (devMode) {
+            let url = "ws://" + window.location.host + "/ws/ui";
+            if (new URLSearchParams(window.location.search).has("host")) {
+                url = new URLSearchParams(window.location.search).get("host") || url;
+            } else if (devMode) {
                 url = "ws://127.0.0.1:8081/ws/ui";
-            } else {
-                url = "ws://" + window.location.host + "/ws/ui";
             }
 
             console.log("Opening websocket on:", url);
