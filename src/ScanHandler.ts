@@ -109,7 +109,7 @@ export default class ScanHandler {
     }
 
     private complete(moreActionsAllowed = false, infiniteLogoutTimeout = false) {
-        this.busy = true;
+        this.busy = false;
         this.active = moreActionsAllowed;
 
         // Handling logout timeout
