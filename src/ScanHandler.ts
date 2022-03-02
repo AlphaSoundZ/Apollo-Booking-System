@@ -85,8 +85,12 @@ export default class ScanHandler {
         try {
             booking = await this.api.book(this.uid, uid);
         } catch (err) {
-            this.socketManager.catchError(err, "Error occurred while booking device.");
-            this.complete();
+            this.socketManager.catchError(
+                err,
+                "Error occurred while booking device.",
+                ReturnTarget.USER_HOME,
+            );
+            this.complete(true);
             return;
         }
 
@@ -95,7 +99,7 @@ export default class ScanHandler {
             this.socketManager.sendError(
                 new DisplayError(booking.response, booking.message, ReturnTarget.USER_HOME),
             );
-            this.complete(booking.user.teacher, booking.user.teacher);
+            this.complete(true);
             return;
         }
 
