@@ -84,6 +84,7 @@ export default class RFIDManager {
             logger.debug("Card read UID:", this.lastUid);
 
             // Decide on what routine to run
+            logger.debug("Last handler:", this.lastHandler);
             if (
                 !this.lastHandler ||
                 (this.lastHandler && !this.lastHandler.active && !this.lastHandler.busy)
@@ -95,7 +96,7 @@ export default class RFIDManager {
             } else if (this.lastHandler && this.lastHandler.active && this.lastHandler.busy) {
                 // Skipping, handler is currently busy
             } else {
-                logger.warn("Unexpected edge case occurred");
+                logger.warn("Unexpected edge case occurred. Last handler:", this.lastHandler);
                 this.lastHandler?.cancel();
                 this.lastHandler = null;
             }
