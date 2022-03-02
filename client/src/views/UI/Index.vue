@@ -51,13 +51,13 @@ export default Vue.extend({
     },
     computed: {
         connected(): boolean {
-            return this.$root.connectionStatus == ConnectionStatus.CONNECTED;
+            return (this.$root as any).connectionStatus == ConnectionStatus.CONNECTED;
         },
         connecting(): boolean {
-            return this.$root.connectionStatus == ConnectionStatus.CONNECTING;
+            return (this.$root as any).connectionStatus == ConnectionStatus.CONNECTING;
         },
         disconnected(): boolean {
-            return this.$root.connectionStatus == ConnectionStatus.DISCONNECTED;
+            return (this.$root as any).connectionStatus == ConnectionStatus.DISCONNECTED;
         },
     },
     watch: {
