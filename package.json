@@ -2,6 +2,7 @@
     "name": "ght-buchungssystem",
     "version": "1.0.0",
     "main": "src/index.ts",
+    "type": "module",
     "repository": "https://github.com/Matix-Media/GHT-Buchungssystem.git",
     "author": "Max Heilmann <support@matix-media.net>",
     "license": "MIT",
