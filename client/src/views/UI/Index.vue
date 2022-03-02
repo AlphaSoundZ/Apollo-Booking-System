@@ -14,7 +14,6 @@
                 <span class="description"> Disconnected </span>
             </div>
         </Transition>
-
         <div class="branding">
             <img src="@/assets/img/school-logo.png" alt="" />
         </div>
@@ -83,7 +82,8 @@ export default Vue.extend({
     -moz-osx-font-smoothing: grayscale;
     background-color: white;
 
-    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
 
     &.mouse-hidden {
         cursor: none;
