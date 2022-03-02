@@ -110,7 +110,6 @@ new Vue({
                         case "uistate": {
                             const uiEvent = event.data;
                             uiEvent.state = UIState.getByIdentifier(uiEvent.state);
-                            console.log(uiEvent.state);
                             this.triggerUIStateEvent(uiEvent as UIStateEvent);
 
                             break;
@@ -137,7 +136,7 @@ new Vue({
 
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
             if (event.state == UIState.USER_LOGOUT) event.returnTarget = ReturnTarget.HOME;
-            if ((event.state = UIState.DEVICE_RETURNED)) event.returnTarget = ReturnTarget.HOME;
+            if (event.state == UIState.DEVICE_RETURNED) event.returnTarget = ReturnTarget.HOME;
 
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
