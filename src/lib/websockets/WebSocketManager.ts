@@ -19,7 +19,7 @@ export default class WebSocketManager {
             this.removeWebSocket(ws);
         });
         this.sockets.push(ws);
-        logger.debug("New ui connection");
+        logger.debug("New UI connection");
     }
 
     /**
