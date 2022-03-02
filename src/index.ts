@@ -8,6 +8,7 @@ import * as cors from "cors";
 import * as expressWs from "express-ws";
 import logger from "./config/logger";
 import RFIDManager from "./RFIDManager";
+import API, { ResponseType } from "./lib/API";
 
 // Defining app
 const uiPort = process.env.UI_PORT;
@@ -17,7 +18,6 @@ expressWs(app);
 
 // Importing routes
 import routes from "./routes";
-import API, { ResponseType } from "./lib/API";
 
 // Program initialization is async
 (async () => {
