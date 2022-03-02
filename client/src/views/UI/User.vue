@@ -40,7 +40,7 @@
             <div class="recently-booked">
                 <div class="booking" v-for="booking in history" :key="booking.device_id">
                     <combined-icon
-                        v-if="!booking.time_stamp_2"
+                        v-if="!booking.end"
                         :left="true"
                         class="device"
                         background="#f3f4f9"

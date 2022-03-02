@@ -14,8 +14,15 @@ export default Vue.extend({
                 laptop: "laptop",
                 smartphone: "smartphone",
                 ipad: "tablet_mac",
-            },
+                "surface book": "laptop",
+            } as { [key: string]: string },
         };
+    },
+    methods: {
+        getIcon(deviceType: string) {
+            if (this.mapping[deviceType]) return this.mapping[deviceType];
+            else return this.mapping[0];
+        },
     },
 });
 </script>

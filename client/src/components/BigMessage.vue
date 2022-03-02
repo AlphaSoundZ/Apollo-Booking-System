@@ -27,6 +27,7 @@ export default Vue.extend({
 .big-message {
     display: flex;
     align-items: center;
+    margin: 0 10rem;
 }
 
 .icon {
