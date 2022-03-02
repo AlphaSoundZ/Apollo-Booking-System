@@ -19,6 +19,7 @@ interface Root {
     lastUser: null | any;
     connectionStatus: ConnectionStatus;
     connectedSince: number;
+    lastRedirectTimeout: number;
 }
 
 class Event {
@@ -45,6 +46,7 @@ new Vue({
         lastUser: null,
         connectionStatus: ConnectionStatus.CONNECTING,
         connectedSince: new Date().getTime(),
+        lastRedirectTimeout: -1,
     } as Root,
     mounted() {
         this.websocketSetup();
@@ -134,7 +136,8 @@ new Vue({
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
-                setTimeout(() => {
+                if (this.lastRedirectTimeout != -1) clearTimeout(this.lastRedirectTimeout);
+                this.lastRedirectTimeout = setTimeout(() => {
                     switch (event.returnTarget) {
                         case ReturnTarget.HOME: {
                             this.navPage(UIState.HOME.pageName);
