@@ -50,19 +50,20 @@
                             <span class="mi">schedule</span>
                         </template>
                     </combined-icon>
-                    <device-icon v-else :device-type="booking.device.type.type" class="device" />
+                    <device-icon v-else :device-type="booking.device_type" class="device" />
                     <div>
-                        <h4>{{ booking.device.type.name }}</h4>
-                        <p v-if="!booking.returnedAt">
+                        <h4>{{ booking.device_type }}</h4>
+                        <p v-if="!booking.time_stamp_2">
                             Aktuell Ausgeliehen <br />
-                            Seit dem {{ dayjs(booking.bookedAt).format("D.M.YYYY HH:mm") }} Uhr
+                            Seit dem {{ dayjs(booking.time_stamp_1).format("D.M.YYYY HH:mm") }} Uhr
                         </p>
                         <p v-else>
-                            Vom {{ dayjs(booking.bookedAt).format("D.M.YYYY HH:mm") }} Uhr bis zum
+                            Vom {{ dayjs(booking.time_stamp_1).format("D.M.YYYY HH:mm") }} Uhr bis
+                            zum
                             <br />
-                            {{ dayjs(booking.returnedAt).format("D.M.YYYY HH:mm") }} Uhr ({{
+                            {{ dayjs(booking.time_stamp_2).format("D.M.YYYY HH:mm") }} Uhr ({{
                                 duration(
-                                    dayjs(booking.returnedAt).diff(dayjs(booking.bookedAt)),
+                                    dayjs(booking.time_stamp_2).diff(dayjs(booking.time_stamp_1)),
                                 ).humanize()
                             }})
                         </p>
@@ -90,8 +91,10 @@ dayjs.extend(relativeTime);
 export default Vue.extend({
     components: { BigMessage, CombinedIcon, DeviceIcon },
     props: {
-        username: {
-            default: "Max Mustermann",
+        user: {
+            default: () => {
+                return { vorname: "", nachname: "" };
+            },
         },
         history: {
             default: () => [
@@ -105,6 +108,9 @@ export default Vue.extend({
         },
     },
     computed: {
+        username() {
+            return this.user.vorname + " " + this.user.nachname;
+        },
         canBook(): boolean {
             return true;
         },
