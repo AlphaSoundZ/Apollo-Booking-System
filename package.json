@@ -8,9 +8,9 @@
     "private": true,
     "scripts": {
         "dev": "nodemon",
-        "start": "ts-node --transpile-only .",
+        "dev-start": "ts-node --transpile-only .",
         "build": "tsc src/index.ts",
-        "run": "node dist/index.js",
+        "start": "node dist/index.js",
         "mockserver": "ts-node --transpile-only mockupServer.ts"
     },
     "devDependencies": {
