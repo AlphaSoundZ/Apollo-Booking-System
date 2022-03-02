@@ -2,6 +2,7 @@ import WebSocketHandler from "./WebSocketHandler";
 import logger from "../../config/logger";
 import DisplayError, { ReturnTarget } from "../DisplayError";
 import { ResponseType } from "../API";
+import { UIState } from "../UIState";
 
 /**
  * Manages all websocket connections
@@ -29,6 +30,16 @@ export default class WebSocketManager {
         this.sockets.splice(this.sockets.indexOf(ws));
 
         logger.debug("Lost UI connection");
+    }
+
+    /**
+     * Send UI state to UI
+     * @param state UI state for UI
+     * @param data data for UI
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public async sendUI(state: UIState, data: any = {}, returnTarget?: ReturnTarget) {
+        this.send("uistate", { state, returnTarget, data });
     }
 
     /**

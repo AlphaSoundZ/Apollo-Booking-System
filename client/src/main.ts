@@ -3,18 +3,39 @@ import App from "./App.vue";
 import router from "./router";
 import "@/assets/fonts/Roboto.css";
 import "@/assets/fonts/MaterialIcons.css";
+import UIState from "./lib/UIState";
+import { ReturnTarget } from "./lib/ReturnTarget";
 
 Vue.config.productionTip = false;
+
+export enum ConnectionStatus {
+    CONNECTING,
+    CONNECTED,
+    DISCONNECTED,
+}
+
+interface Root {
+    websocket: null | WebSocket;
+    lastUser: null | any;
+    connectionStatus: ConnectionStatus;
+    connectedSince: number;
+}
+
+interface UIStateEvent {
+    state: UIState;
+    returnTarget?: ReturnTarget;
+    data: any;
+}
 
 new Vue({
     router,
     render: (h) => h(App),
     data: {
         websocket: null,
-        pingTimeout: 0,
         lastUser: null,
-        connected: false,
-    } as { websocket: null | WebSocket; pingTimeout: number; connected: boolean },
+        connectionStatus: ConnectionStatus.CONNECTING,
+        connectedSince: 0,
+    } as Root,
     mounted() {
         this.websocketSetup();
     },
@@ -23,7 +44,8 @@ new Vue({
             // Check for dev mode
             const devMode = process.env.NODE_ENV === "development";
 
-            this.connected = false;
+            if (this.connectionStatus != ConnectionStatus.CONNECTING)
+                this.connectionStatus = ConnectionStatus.DISCONNECTED;
             this.navPage("Waiting");
 
             let url = "ws://" + window.location.host + "/ws/ui";
@@ -37,12 +59,15 @@ new Vue({
             this.websocket = new WebSocket(url);
 
             // Ping to check if server is responsive
+            let pingInterval: number;
+            let pingTimeout = 0;
             this.websocket.onopen = () => {
                 console.log("Websocket connected");
-                this.connected = true;
-                setInterval(() => {
+                this.connectionStatus = ConnectionStatus.CONNECTED;
+                this.connectedSince = new Date().getTime();
+                pingInterval = setInterval(() => {
                     this.websocket?.send(JSON.stringify({ type: "event", event: "ping" }));
-                    this.pingTimeout = setTimeout(() => {
+                    pingTimeout = setTimeout(() => {
                         console.log("No response from connection! Reopening connection");
                         this.websocketSetup();
                     }, 3000);
@@ -51,6 +76,8 @@ new Vue({
 
             // Reconnect when connection ends
             this.websocket.onclose = () => {
+                this.connectionStatus = ConnectionStatus.DISCONNECTED;
+                if (pingInterval) clearInterval(pingInterval);
                 if (this.websocket) {
                     this.websocket.close();
                 }
@@ -61,74 +88,42 @@ new Vue({
             this.websocket.onmessage = (ev) => {
                 const res = JSON.parse(ev.data);
                 if (res.type == "response" && res.to == "ping") {
-                    clearTimeout(this.pingTimeout);
+                    clearTimeout(pingTimeout);
                     return;
                 }
+                console.log(res);
                 if (res.type == "event") {
                     console.log("Event received:", res.event, "data:", res.data);
-                    let redirectTarget = "Waiting";
-                    switch (res.event) {
-                        case "gettingChipInfo":
-                            this.navPage("Loading", { message: "Lade Daten..." });
-                            break;
-                        case "bookingDevice":
-                            this.navPage("Loading", { message: "Gerät wird ausgeliehen..." });
-                            break;
-                        case "userLogout":
-                            this.navPage("Success", {
-                                message: "Erfolgreich abgemeldet",
-                                redirectTimeout: 2500,
-                                redirectTarget: "Waiting",
-                            });
-                            break;
-                        case "userInfo":
-                            (this as any).lastUser = {
-                                username: res.data.user.vorname + " " + res.data.user.nachname,
-                                history: res.data.user.history,
-                            };
-                            this.navPage("User", (this as any).lastUser);
-                            break;
-                        case "error":
-                            if (res.data.redirectTarget) redirectTarget = res.data.redirectTarget;
 
-                            if (redirectTarget == "User") {
-                                this.navPage("Error", { message: res.data.message });
-
-                                setTimeout(() => {
-                                    this.navPage("User", (this as any).lastUser);
-                                }, 2500);
-                            } else {
-                                this.navPage("Error", {
-                                    message: res.data.message,
-                                    redirectTimeout: 5000,
-                                    redirectTarget: redirectTarget,
-                                });
-                            }
-
-                            break;
-                        case "bookingCompleted":
-                            this.navPage("Success", {
-                                message: "Gerät erfolgreich ausgeliehen.",
-                            });
-                            console.log((this as any).lastUser);
-                            if ((this as any).lastUser.isTeacher) {
-                                setTimeout(() => {
-                                    this.navPage("User", (this as any).lastUser);
-                                }, 2500);
-                            }
-                            break;
-                        case "deviceReturned":
-                            this.navPage("Success", {
-                                message: "Gerät erfolgreich zurückgegeben.",
-                                redirectTimeout: 2500,
-                                redirectTarget: "Waiting",
-                            });
-                            break;
+                    if (res.event == "uistate") {
+                        const event = res.data;
+                        event.state = UIState.getByIdentifier(event.state);
+                        this.triggerUIStateEvent(event as UIStateEvent);
                     }
                 }
 
                 //console.log(JSON.parse(ev.data))
             };
+        },
+        triggerUIStateEvent(event: UIStateEvent, returnDelay = 3000) {
+            if (event.state == UIState.USER_INFO) this.lastUser = event.data;
+            this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
+            if (event.returnTarget) {
+                setTimeout(() => {
+                    switch (event.returnTarget) {
+                        case ReturnTarget.HOME: {
+                            this.navPage(UIState.HOME.pageName);
+                            break;
+                        }
+                        case ReturnTarget.USER_HOME: {
+                            if (this.lastUser)
+                                this.navPage(UIState.USER_INFO.pageName, this.lastUser);
+                            else this.navPage(UIState.HOME.pageName);
+                            break;
+                        }
+                    }
+                }, returnDelay);
+            }
         },
         navPage(pageName: string, data: any = {}) {
             this.$router.replace({ name: pageName, params: data }).catch((err) => {

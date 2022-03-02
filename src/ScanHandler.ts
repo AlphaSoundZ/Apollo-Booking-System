@@ -26,7 +26,7 @@ export default class ScanHandler {
         this.active = true;
         this.busy = true;
 
-        this.socketManager.send(UIState.GETTING_CHIP_INFO);
+        this.socketManager.sendUI(UIState.GETTING_CHIP_INFO);
 
         let info: APIResponse;
         try {
@@ -40,12 +40,12 @@ export default class ScanHandler {
         if (info.response == ResponseType.DEVICE_RETURNED) {
             // UUID is device and specified device got returned
             logger.debug(`Device returned (ID: ${info.device.id})`);
-            this.socketManager.send(UIState.DEVICE_RETURNED);
+            this.socketManager.sendUI(UIState.DEVICE_RETURNED);
             this.complete();
         } else if (info.response == ResponseType.USER_INFO) {
             // UUID is user and info got returned
             this.uid = uid;
-            this.socketManager.send(UIState.USER_INFO, { user: info.user });
+            this.socketManager.sendUI(UIState.USER_INFO, { user: info.user });
             this.complete(true, info.user.teacher);
         } else if (info.response.error) {
             // An server error occurred
@@ -74,12 +74,12 @@ export default class ScanHandler {
         if (uid == this.uid) {
             // Manual logout
             logger.info("User manually logged out");
-            this.socketManager.send(UIState.USER_LOGOUT);
+            this.socketManager.sendUI(UIState.USER_LOGOUT);
             this.complete();
             return;
         }
 
-        this.socketManager.send(UIState.DEVICE_BOOKING_LOADING);
+        this.socketManager.sendUI(UIState.DEVICE_BOOKING_LOADING);
 
         let booking: APIResponse;
         try {
@@ -100,7 +100,11 @@ export default class ScanHandler {
         }
 
         logger.debug(`Booking completed (ID: ${booking.device.id})`);
-        this.socketManager.send(UIState.DEVICE_BOOKING_COMPLETED);
+        this.socketManager.sendUI(
+            UIState.DEVICE_BOOKING_COMPLETED,
+            {},
+            booking.user.teacher ? ReturnTarget.USER_HOME : ReturnTarget.HOME,
+        );
         this.complete(booking.user.teacher, booking.user.teacher);
     }
 
@@ -112,7 +116,7 @@ export default class ScanHandler {
         if (this.logoutTimeout) clearTimeout(this.logoutTimeout);
         if (moreActionsAllowed && !infiniteLogoutTimeout) {
             this.logoutTimeout = setTimeout(() => {
-                this.socketManager.send(UIState.USER_LOGOUT);
+                this.socketManager.sendUI(UIState.USER_LOGOUT);
                 this.complete();
             }, ScanHandler.LOGOUT_TIMEOUT);
         }
