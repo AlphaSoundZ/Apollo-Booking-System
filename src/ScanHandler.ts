@@ -46,7 +46,6 @@ export default class ScanHandler {
             // UUID is user and info got returned
             this.uid = uid;
             this.socketManager.sendUI(UIState.USER_INFO, { user: info.user });
-            logger.debug("Current user:", info.user);
             this.complete(true, info.user.teacher);
         } else if (info.response.error) {
             // An server error occurred
