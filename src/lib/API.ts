@@ -52,6 +52,33 @@ export class ResponseType {
     }
 }
 
+export class DeviceType {
+    public static readonly IPad = new DeviceType("Ipad", 1);
+    public static readonly UserCard = new DeviceType("UserCard", 2);
+    public static readonly SurfaceBook = new DeviceType("Surface Book", 3);
+    public static readonly Laptop = new DeviceType("Laptop", 4);
+
+    public static readonly deviceTypes = [this.IPad, this.UserCard, this.SurfaceBook, this.Laptop];
+
+    public static getByName(name: string): DeviceType {
+        for (const deviceType of this.deviceTypes) if (deviceType.name == name) return deviceType;
+        return null;
+    }
+
+    public static getById(id: number): DeviceType {
+        for (const deviceType of this.deviceTypes) if (deviceType.id == id) return deviceType;
+        return null;
+    }
+
+    public readonly name: string;
+    public readonly id: number;
+
+    private constructor(name: string, id: number) {
+        this.name = name;
+        this.id = id;
+    }
+}
+
 export interface APIUser {
     name: string;
     lastname: string;
@@ -92,6 +119,14 @@ export default class API {
 
     public async book(userUid: string, deviceUid: string): Promise<APIResponse> {
         return this.parseApiResponse(await this.makeRequest({ rfid1: userUid, rfid2: deviceUid }));
+    }
+
+    public async registerDevice(uid: string, type: DeviceType, token: string) {
+        return await axios.post(
+            this.apiUrl,
+            { rfid_code: uid, type: type.id },
+            { headers: { Authorization: "Bearer " + token } },
+        );
     }
 
     private parseApiResponse(response: unknown): APIResponse {
