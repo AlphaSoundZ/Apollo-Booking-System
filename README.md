@@ -17,6 +17,7 @@ This page contains all information required to learn about the program's structu
     -   [Yarn](#yarn)
     -   [Building the UI](#building-the-ui)
 -   [Running the program](#running-the-program)
+-   [Registering new devices](#registering-new-devices)
 -   [Configuration](#configuration)
 -   [Structure](#structure)
 
@@ -150,6 +151,12 @@ if you want to run the application in debug mode with hot-reloading for developm
 ```console
 $ yarn dev
 ```
+
+## Registering new Devices
+**INFO:** The register token has to be set in the environment in order to register new devices.
+
+Run the script with the command line argument `--register-devices`.  
+The program will now start in register mode. No UI will be shown. If you put a rfid card on the reader, the program will ask you through the command line as which device type you want to register it. The possible devices are listed above. By pressing return, the program will use the last selected device. The registration is asynchronous so you can keep registering without having to wait for the registration to complete.
 
 ## Structure
 
