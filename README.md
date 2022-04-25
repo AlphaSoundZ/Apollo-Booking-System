@@ -191,7 +191,7 @@ The program follows the following structure:
 
 ---
 
-<img src="https://matix-media.net/media/logo.svg" style="float:left;margin-right:20px;" height="50px" />
+<img src="https://matix-media.net/media/logo.svg" height="50px" />
 
 Released under the [MIT License](LICENSE)  
 Copyright &copy; 2021 Max Heilmann
