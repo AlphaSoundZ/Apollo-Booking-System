@@ -1,10 +1,11 @@
 import logger from "./config/logger";
+import Handler from "./Handler";
 import API, { APIResponse, ResponseType } from "./lib/API";
 import DisplayError, { ReturnTarget } from "./lib/DisplayError";
 import { UIState } from "./lib/UIState";
 import WebSocketManager from "./lib/websockets/WebSocketManager";
 
-export default class ScanHandler {
+export default class ScanHandler implements Handler {
     private static LOGOUT_TIMEOUT = Number.parseInt(process.env.LOGOUT_TIMEOUT);
 
     public active = false;

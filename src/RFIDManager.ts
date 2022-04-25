@@ -4,6 +4,8 @@ import logger from "./config/logger";
 import ScanHandler from "./ScanHandler";
 import WebSocketManager from "./lib/websockets/WebSocketManager";
 import API from "./lib/API";
+import RegisterHandler from "./RegisterHandler";
+import Handler from "./Handler";
 
 export default class RFIDManager {
     private static READ_TIMEOUT = Number.parseInt(process.env.READ_TIMEOUT);
@@ -12,18 +14,21 @@ export default class RFIDManager {
     public readonly socketManager = new WebSocketManager();
     public readonly api: API;
 
+    private readonly registerMode: boolean;
+
     private reader: Mfrc522;
     private listening = true;
     private lastScan: number;
     private lastUid: string;
-    private lastHandler: ScanHandler;
+    private lastHandler: Handler;
 
     /**
      * Initialize the manager
      * @param apiUrl URL of the backend server
      */
-    constructor(api: API) {
+    constructor(api: API, registerMode: boolean) {
         this.api = api;
+        this.registerMode = registerMode;
 
         // Create spi
         const softSPI = new SoftSPI({
@@ -83,20 +88,25 @@ export default class RFIDManager {
 
             logger.debug("Card read UID:", this.lastUid);
 
+            // If in register mode, do not enter main routine
+            if (this.registerMode) {
+                this.lastHandler = new RegisterHandler(this.api);
+                this.lastHandler.run(currentUid);
+            }
+            const handler = this.lastHandler as ScanHandler;
+
             // Decide on what routine to run
-            if (
-                !this.lastHandler ||
-                (this.lastHandler && !this.lastHandler.active && !this.lastHandler.busy)
-            ) {
+            if (!handler || (handler && !handler.active && !handler.busy)) {
                 this.lastHandler = new ScanHandler(this.socketManager, this.api);
                 this.lastHandler.run(currentUid);
-            } else if (this.lastHandler && this.lastHandler.active && !this.lastHandler.busy) {
-                this.lastHandler.moreInput(currentUid);
-            } else if (this.lastHandler && this.lastHandler.active && this.lastHandler.busy) {
+            } else if (handler && handler.active && !handler.busy) {
+                handler.moreInput(currentUid);
+                this.lastHandler = handler;
+            } else if (handler && handler.active && handler.busy) {
                 // Skipping, handler is currently busy
             } else {
-                logger.warn("Unexpected edge case occurred. Last handler:", this.lastHandler);
-                this.lastHandler?.cancel();
+                logger.warn("Unexpected edge case occurred. Last handler:", handler);
+                handler?.cancel();
                 this.lastHandler = null;
             }
         } catch (err) {
