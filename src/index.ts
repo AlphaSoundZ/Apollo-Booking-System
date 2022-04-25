@@ -11,6 +11,7 @@ import RFIDManager from "./RFIDManager";
 import API, { ResponseType } from "./lib/API";
 
 // Defining app
+const registerMode = process.argv.includes("--register-devices");
 const uiPort = process.env.UI_PORT;
 const api = new API(process.env.API_URL);
 const app = express();
@@ -51,7 +52,7 @@ import routes from "./routes";
     logger.info("Server connection established");
 
     // Setting up rfid routine
-    const rfidManager = new RFIDManager(api);
+    const rfidManager = new RFIDManager(api, registerMode);
 
     // Setting up express extensions
     app.use(cors());
@@ -62,7 +63,8 @@ import routes from "./routes";
     // Registering routes
     app.use(routes);
 
-    app.listen(uiPort, () => {
-        logger.info("Started. UI reachable through http://127.0.0.1:" + uiPort + "/#/ui");
-    });
+    if (!registerMode)
+        app.listen(uiPort, () => {
+            logger.info("Started. UI reachable through http://127.0.0.1:" + uiPort + "/#/ui");
+        });
 })();
