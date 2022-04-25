@@ -28,6 +28,10 @@ log4js.configure({
             appenders: ["log", "console"],
             level: logLevel,
         },
+        cli: {
+            appenders: ["log", "console"],
+            level: "info",
+        },
     },
 });
 
