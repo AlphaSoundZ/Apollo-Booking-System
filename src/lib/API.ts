@@ -7,6 +7,9 @@ interface RawAPIResponse {
     };
 }
 
+const registrationUrl = process.env.REGISTRATION_API_URL;
+console.log(registrationUrl);
+
 export class ResponseType {
     public static DEVICE_BOOKED = new ResponseType(0, "DEVICE_BOOKED");
     public static DEVICE_RETURNED = new ResponseType(1, "DEVICE_RETURNED");
@@ -122,11 +125,11 @@ export default class API {
     }
 
     public async registerDevice(uid: string, type: DeviceType, token: string) {
-        return await axios.post(
-            this.apiUrl,
+        return (await axios.post(
+            registrationUrl,
             { rfid_code: uid, type: type.id },
             { headers: { Authorization: "Bearer " + token } },
-        );
+        )).data;
     }
 
     private parseApiResponse(response: unknown): APIResponse {

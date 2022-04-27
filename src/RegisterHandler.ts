@@ -29,7 +29,7 @@ export default class RegisterHandler implements Handler {
                     uid +
                     '" (or return for ' +
                     RegisterHandler.lastSelectedType.name +
-                    ")",
+                    "): ",
                 (answer) => {
                     resolve(answer);
                 },
@@ -51,6 +51,15 @@ export default class RegisterHandler implements Handler {
     }
 
     private async register(uid: string, type: DeviceType) {
-        return await this.api.registerDevice(uid, type, token);
+        try {
+            const response = await this.api.registerDevice(uid, type, token);
+            if (response.success && response.success == 1)
+                logger.info('Successfully registered "' + uid + '" as ' + type.name);
+            else
+                logger.error("Error while registering device: " + response.log);
+        } catch (err) {
+            logger.error("Error while registering device:", err);
+        }
+        
     }
 }
