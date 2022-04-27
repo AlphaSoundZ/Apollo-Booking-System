@@ -21,15 +21,19 @@ export default Vue.extend({
     props: {
         left: {
             default: false,
+            type: Boolean,
         },
         background: {
             default: "#fff",
+            type: String,
         },
         borderRadius: {
             default: "1em",
+            type: String,
         },
         addedPadding: {
             default: "0.01em",
+            type: String,
         },
     },
 });
