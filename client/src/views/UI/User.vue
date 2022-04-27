@@ -35,10 +35,10 @@
             </div>
         </div>
 
-        <div class="infos" v-if="history.length > 0" ref="infos">
+        <div class="infos" v-if="user.history.length > 0" ref="infos">
             <h2>Zuletzt Ausgeliehen</h2>
             <div class="recently-booked">
-                <div class="booking" v-for="booking in history" :key="booking.device_id">
+                <div class="booking" v-for="booking in user.history" :key="booking.device_id">
                     <combined-icon
                         v-if="!booking.end"
                         :left="true"
@@ -90,12 +90,17 @@ export default Vue.extend({
     props: {
         user: {
             default: () => {
-                return { vorname: "", nachname: "" };
+                return {
+                    vorname: "",
+                    nachname: "",
+                    history: [] as Array<{
+                        device_id: number;
+                        device_type: string;
+                        begin: string;
+                        end: string;
+                    }>,
+                };
             },
-        },
-        history: {
-            default: () =>
-                [] as Array<{ device_id: number; device_type: string; begin: string; end: string }>,
         },
     },
     computed: {
