@@ -45,7 +45,7 @@
                         class="device"
                         background="#f3f4f9"
                     >
-                        <device-icon :device-type="booking.device_type" />
+                        <device-icon :device-type="'' + booking.device_type" />
                         <template v-slot:added>
                             <span class="mi">schedule</span>
                         </template>
@@ -169,7 +169,7 @@ export default Vue.extend({
 
 .infos {
     position: relative;
-    width: 610px;
+    width: 25vw;
     padding-top: 30px;
     padding-right: 36px;
     max-height: 100vh;
@@ -184,26 +184,27 @@ export default Vue.extend({
     .recently-booked {
         .booking {
             background-color: #f3f4f9;
-            padding: 21px;
+            padding: 21px 0;
+            padding-left: 10px;
             display: flex;
             align-items: center;
             border-radius: 23px;
             margin-bottom: 20px;
 
             .device {
-                font-size: 85px;
+                font-size: 50px;
                 margin-right: 27px;
             }
 
             h4 {
-                font-size: 24px;
+                font-size: 20px;
                 font-weight: 400;
-                margin-bottom: 11px;
+                margin-bottom: 0;
             }
 
             p {
                 font-weight: 300;
-                font-size: 25px;
+                font-size: 16px;
             }
         }
     }

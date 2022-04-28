@@ -1,5 +1,5 @@
 <template>
-    <span class="mi">{{ mapping[deviceType.toLowerCase()] }}</span>
+    <span class="mi">{{ getIcon(deviceType) }}</span>
 </template>
 
 <script lang="ts">
@@ -10,18 +10,33 @@ export default Vue.extend({
     },
     data() {
         return {
-            mapping: {
-                laptop: "laptop",
-                smartphone: "smartphone",
-                ipad: "tablet_mac",
-                "surface book": "laptop",
-            } as { [key: string]: string },
+            mapping: [
+                {
+                    identifiers: ["1", "ipad"],
+                    icon: "tablet_mac",
+                },
+                {
+                    identifiers: ["2", "user", "usercard", "user_card"],
+                    icon: "account_cirlce",
+                },
+                {
+                    identifiers: ["3", "surface", "surface_book"],
+                    icon: "laptop",
+                },
+                {
+                    identifiers: ["4", "laptop"],
+                    icon: "laptop_mac",
+                },
+            ] as Array<{ identifiers: Array<string>; icon: string }>,
         };
     },
     methods: {
-        getIcon(deviceType: string) {
-            if (this.mapping[deviceType]) return this.mapping[deviceType];
-            else return this.mapping[0];
+        getIcon(deviceType: string): string {
+            deviceType = deviceType.toLowerCase().replace(" ", "_");
+            for (const mappingEntry of this.mapping) {
+                if (mappingEntry.identifiers.includes(deviceType)) return mappingEntry.icon;
+            }
+            return this.mapping[0].icon;
         },
     },
 });
