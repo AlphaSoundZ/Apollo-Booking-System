@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="infos" v-if="user.history.length > 0" ref="infos">
+        <div class="infos" v-if="user.history && user.history.length > 0" ref="infos">
             <h2>Zuletzt Ausgeliehen</h2>
             <div class="recently-booked">
                 <div class="booking" v-for="booking in user.history" :key="booking.device_id">
