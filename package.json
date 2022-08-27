@@ -36,7 +36,7 @@
         "express": "^4.17.1",
         "express-ws": "^5.0.2",
         "log4js": "^6.3.0",
-        "mfrc522-rpi": "./libs/mfrc522-rpi",
+        "mfrc522-rpi": "file:./libs/mfrc522-rpi",
         "rpi-softspi": "^1.0.5",
         "ws": "^8.2.3"
     }

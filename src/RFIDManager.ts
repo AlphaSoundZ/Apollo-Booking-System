@@ -85,6 +85,9 @@ export default class RFIDManager {
                 const timeBetween = Date.now() - this.lastScan;
                 if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) return;
 
+                // Create buzz
+                this.reader.alert();
+
                 // Update last scan data
                 this.lastUid = currentUid;
                 this.lastScan = Date.now();
