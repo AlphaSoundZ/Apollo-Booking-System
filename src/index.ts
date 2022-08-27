@@ -13,7 +13,7 @@ import API, { ResponseType } from "./lib/API";
 // Defining app
 const registerMode = process.argv.includes("--register-devices");
 const uiPort = process.env.UI_PORT;
-const api = new API(process.env.API_URL);
+const api = new API(process.env.API_URL, process.env.API_TOKEN);
 const app = express();
 expressWs(app);
 
@@ -28,13 +28,13 @@ import routes from "./routes";
     // Check for server availability every 15 seconds until working
     while (!connectionSuccessful) {
         try {
-            const response = await api.status();
-            if (response.response != ResponseType.NO_UUID_SPECIFIED) {
+            const tokenStatus = await api.checkToken();
+            if (tokenStatus.response != ResponseType.SUCCESS) {
                 logger.error(
                     "Server responded with error:",
-                    response.response.name,
+                    tokenStatus.response.name,
                     "Message:",
-                    response.message,
+                    tokenStatus.message,
                 );
                 connectionSuccessful = false;
                 logger.info("Trying to reconnect in 15 seconds");

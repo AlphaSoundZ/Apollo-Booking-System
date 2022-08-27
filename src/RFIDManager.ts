@@ -24,7 +24,8 @@ export default class RFIDManager {
 
     /**
      * Initialize the manager
-     * @param apiUrl URL of the backend server
+     * @param api API object
+     * @param registerMode enable for device registration
      */
     constructor(api: API, registerMode: boolean) {
         this.api = api;
@@ -46,6 +47,7 @@ export default class RFIDManager {
     }
 
     private startReadCycle() {
+        this.readCycle();
         setInterval(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
     }
 
@@ -53,64 +55,69 @@ export default class RFIDManager {
      * Gets executed every read cycle
      */
     private readCycle() {
-        if (!this.listening) return;
+        (() => {
+            if (!this.listening) return;
 
-        // Catch any errors occurring during chip read for better resistance
-        try {
-            // Reset the reader for new read
-            this.reader.reset();
+            // Catch any errors occurring during chip read for better resistance
+            try {
+                // Reset the reader for new read
+                this.reader.reset();
 
-            // Find RFID chip
-            let response = this.reader.findCard();
-            if (!response || !response.status) return;
+                // Find RFID chip
+                let response = this.reader.findCard();
+                if (!response || !response.status) return;
 
-            // Read the chip uid
-            response = this.reader.getUid();
+                // Read the chip uid
+                response = this.reader.getUid();
 
-            // Return if failed
-            if (!response.status) return;
+                // Return if failed
+                if (!response.status) return;
 
-            // Generate UID from chip bytes
-            const uid = response.data;
-            const currentUid =
-                uid[0].toString(16) +
-                uid[1].toString(16) +
-                uid[2].toString(16) +
-                uid[3].toString(16);
+                // Generate UID from chip bytes
+                const uid = response.data;
+                const currentUid =
+                    uid[0].toString(16) +
+                    uid[1].toString(16) +
+                    uid[2].toString(16) +
+                    uid[3].toString(16);
 
-            // Check for read timeout
-            const timeBetween = Date.now() - this.lastScan;
-            if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) return;
+                // Check for read timeout
+                const timeBetween = Date.now() - this.lastScan;
+                if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) return;
 
-            // Update last scan data
-            this.lastUid = currentUid;
-            this.lastScan = Date.now();
+                // Update last scan data
+                this.lastUid = currentUid;
+                this.lastScan = Date.now();
 
-            logger.debug("Card read UID:", this.lastUid);
+                logger.debug("Card read UID:", this.lastUid);
 
-            // If in register mode, do not enter main routine
-            if (this.registerMode) {
-                this.lastHandler = new RegisterHandler(this.api);
-                this.lastHandler.run(currentUid);
+                // If in register mode, do not enter main routine
+                if (this.registerMode) {
+                    this.lastHandler = new RegisterHandler(this.api);
+                    this.lastHandler.run(currentUid);
+                }
+                const handler = this.lastHandler as ScanHandler;
+
+                // Decide on what routine to run
+                if (!handler || (handler && !handler.active && !handler.busy)) {
+                    this.lastHandler = new ScanHandler(this.socketManager, this.api);
+                    this.lastHandler.run(currentUid);
+                } else if (handler && handler.active && !handler.busy) {
+                    handler.moreInput(currentUid);
+                    this.lastHandler = handler;
+                } else if (handler && handler.active && handler.busy) {
+                    // Skipping, handler is currently busy
+                } else {
+                    logger.warn("Unexpected edge case occurred. Last handler:", handler);
+                    handler?.cancel();
+                    this.lastHandler = null;
+                }
+            } catch (err) {
+                this.socketManager.catchError(err, "Error occurred while reading uid");
             }
-            const handler = this.lastHandler as ScanHandler;
+        })();
 
-            // Decide on what routine to run
-            if (!handler || (handler && !handler.active && !handler.busy)) {
-                this.lastHandler = new ScanHandler(this.socketManager, this.api);
-                this.lastHandler.run(currentUid);
-            } else if (handler && handler.active && !handler.busy) {
-                handler.moreInput(currentUid);
-                this.lastHandler = handler;
-            } else if (handler && handler.active && handler.busy) {
-                // Skipping, handler is currently busy
-            } else {
-                logger.warn("Unexpected edge case occurred. Last handler:", handler);
-                handler?.cancel();
-                this.lastHandler = null;
-            }
-        } catch (err) {
-            this.socketManager.catchError(err, "Error occurred while reading uid");
-        }
+        // Set timeout so that the cycle begins again after some period
+        setTimeout(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
     }
 }

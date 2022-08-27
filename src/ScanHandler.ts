@@ -1,6 +1,6 @@
 import logger from "./config/logger";
 import Handler from "./Handler";
-import API, { APIResponse, ResponseType } from "./lib/API";
+import API, { BookingResponse, ResponseType } from "./lib/API";
 import DisplayError, { ReturnTarget } from "./lib/DisplayError";
 import { UIState } from "./lib/UIState";
 import WebSocketManager from "./lib/websockets/WebSocketManager";
@@ -29,7 +29,7 @@ export default class ScanHandler implements Handler {
 
         this.socketManager.sendUI(UIState.GETTING_CHIP_INFO);
 
-        let info: APIResponse;
+        let info: BookingResponse;
         try {
             info = await this.api.unknownActionForUid(uid);
         } catch (err) {
@@ -81,7 +81,7 @@ export default class ScanHandler implements Handler {
 
         this.socketManager.sendUI(UIState.DEVICE_BOOKING_LOADING);
 
-        let booking: APIResponse;
+        let booking: BookingResponse;
         try {
             booking = await this.api.book(this.uid, uid);
         } catch (err) {
