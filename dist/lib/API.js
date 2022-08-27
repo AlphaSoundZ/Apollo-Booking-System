@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeviceType = exports.ResponseType = void 0;
 const axios_1 = require("axios");
 const registrationUrl = process.env.REGISTRATION_API_URL;
-console.log(registrationUrl);
 class ResponseType {
     constructor(identifier, name, error = false) {
         this.identifier = identifier;

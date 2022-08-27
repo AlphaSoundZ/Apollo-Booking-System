@@ -132,6 +132,8 @@ new Vue({
             };
         },
         triggerUIStateEvent(event: UIStateEvent, returnDelay = 3000) {
+            console.log(event.state, event.data);
+            
             if (this.lastRedirectTimeout != -1) clearTimeout(this.lastRedirectTimeout);
 
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
