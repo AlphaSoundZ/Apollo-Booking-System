@@ -146,6 +146,7 @@ export default class API {
 
     public async checkToken(): Promise<CheckTokenResponse> {
         const data = (await this.client.post("/check_token")).data;
+        console.log("Data:", data);
         return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
     }
 
