@@ -119,7 +119,6 @@ export default class RFIDManager {
                 await this.socketManager.catchError(err, "Error occurred while reading uid");
             }
         })();
-        logger.debug("Done with cycle");
 
         // Set timeout so that the cycle begins again after some period
         setTimeout(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
