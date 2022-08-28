@@ -54,8 +54,8 @@ export default class RFIDManager {
     /**
      * Gets executed every read cycle
      */
-    private readCycle() {
-        (() => {
+    private async readCycle() {
+        await (async () => {
             if (!this.listening) return;
 
             // Catch any errors occurring during chip read for better resistance
@@ -104,9 +104,9 @@ export default class RFIDManager {
                 // Decide on what routine to run
                 if (!handler || (handler && !handler.active && !handler.busy)) {
                     this.lastHandler = new ScanHandler(this.socketManager, this.api);
-                    this.lastHandler.run(currentUid);
+                    await this.lastHandler.run(currentUid);
                 } else if (handler && handler.active && !handler.busy) {
-                    handler.moreInput(currentUid);
+                    await handler.moreInput(currentUid);
                     this.lastHandler = handler;
                 } else if (handler && handler.active && handler.busy) {
                     // Skipping, handler is currently busy
@@ -116,9 +116,10 @@ export default class RFIDManager {
                     this.lastHandler = null;
                 }
             } catch (err) {
-                this.socketManager.catchError(err, "Error occurred while reading uid");
+                await this.socketManager.catchError(err, "Error occurred while reading uid");
             }
         })();
+        logger.debug("Done with cycle");
 
         // Set timeout so that the cycle begins again after some period
         setTimeout(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
