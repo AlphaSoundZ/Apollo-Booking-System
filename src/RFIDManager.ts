@@ -121,6 +121,6 @@ export default class RFIDManager {
         })();
 
         // Set timeout so that the cycle begins again after some period
-        setTimeout(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
+        //setTimeout(this.readCycle.bind(this), RFIDManager.READ_CYCLE_LENGTH);
     }
 }
