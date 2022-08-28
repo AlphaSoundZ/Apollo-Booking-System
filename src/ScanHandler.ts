@@ -109,7 +109,7 @@ export default class ScanHandler implements Handler {
             {},
             booking.user.teacher ? ReturnTarget.USER_HOME : ReturnTarget.HOME,
         );
-        this.complete(booking.user.teacher, booking.user.teacher);
+        this.complete(booking.user.teacher);
     }
 
     private complete(moreActionsAllowed = false, infiniteLogoutTimeout = false) {
