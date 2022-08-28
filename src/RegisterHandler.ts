@@ -1,3 +1,4 @@
+import axios, { AxiosError } from "axios";
 import * as log4js from "log4js";
 import { createInterface as createReadlineInterface } from "readline";
 import Handler from "./Handler";
@@ -56,8 +57,10 @@ export default class RegisterHandler implements Handler {
             if (!response.response.error)
                 logger.info('Successfully registered "' + uid + '" as ' + type.name);
             else logger.error("Error while registering device: " + response.message);
-        } catch (err) {
-            logger.error("Error while registering device:", err);
+        } catch (err: unknown | AxiosError) {
+            if (axios.isAxiosError(err)) {
+                logger.error("Error while registering device:", err.message, err.response.data);
+            } else logger.error("Error while registering device:", err);
         }
     }
 }
