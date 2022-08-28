@@ -22,6 +22,7 @@ import routes from "./routes";
 
 // Program initialization is async
 (async () => {
+    if (registerMode) logger.warn("Started in register mode!");
     logger.info("Checking server connection...");
     let connectionSuccessful = false;
 
