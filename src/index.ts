@@ -29,7 +29,7 @@ import routes from "./routes";
     while (!connectionSuccessful) {
         try {
             const tokenStatus = await api.checkToken();
-            if (tokenStatus.response != ResponseType.SUCCESS) {
+            if (tokenStatus.response != ResponseType.OK) {
                 logger.error(
                     "Server responded with error:",
                     tokenStatus.response.name,
