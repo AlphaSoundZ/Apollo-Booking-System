@@ -33,6 +33,7 @@ export class ResponseType {
     public static UNEXPECTED_ERROR = new ResponseType(9, "UNEXPECTED_ERROR", true);
     public static INTERNAL_SERVER_ERROR = new ResponseType(10, "INTERNAL_SERVER_ERROR", true);
     public static INTERNAL_SERVER_ERROR_500 = new ResponseType(500, "INTERNAL_SERVER_ERROR", true);
+    public static BAD_REQUEST = new ResponseType(400, "BAD_REQUEST", true);
     public static AUTHORIZATION_ERROR = new ResponseType(401, "AUTHORIZATION_ERROR", true);
 
     private static RESPONSE_TYPES = [
@@ -49,6 +50,7 @@ export class ResponseType {
         this.UNEXPECTED_ERROR,
         this.INTERNAL_SERVER_ERROR,
         this.INTERNAL_SERVER_ERROR_500,
+        this.BAD_REQUEST,
         this.AUTHORIZATION_ERROR,
     ];
 

@@ -100,6 +100,15 @@ class MFRC522 {
         }
     }
 
+    betterAlert() {
+        if (this.buzzer_pin) {
+            rpio.write(this.buzzer_pin, 1);
+            setTimeout(() => {
+                rpio.write(this.buzzer_pin, 0);
+            }, 80);
+        }
+    }
+
     /**
      * Reads a bit from the specified register in the MFRC522 chip.
      * The interface is described in the datasheet section 8.1.2.

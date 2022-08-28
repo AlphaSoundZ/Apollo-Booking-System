@@ -86,7 +86,7 @@ export default class RFIDManager {
                 if (this.lastUid == currentUid && timeBetween < RFIDManager.READ_TIMEOUT) return;
 
                 // Create buzz
-                this.reader.alert();
+                this.reader.betterAlert();
 
                 // Update last scan data
                 this.lastUid = currentUid;
