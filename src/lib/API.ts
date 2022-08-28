@@ -20,7 +20,7 @@ interface RawBookingResponse {
 }
 
 export class ResponseType {
-    public static SUCCESS = new ResponseType(0, "SUCCESS");
+    public static SUCCESS = new ResponseType(0, "BOOKING_SUCCESS");
     public static OK = new ResponseType(200, "OK");
     public static DEVICE_RETURNED = new ResponseType(1, "DEVICE_RETURNED");
     public static USER_INFO = new ResponseType(2, "USER_INFO");
@@ -35,6 +35,7 @@ export class ResponseType {
     public static INTERNAL_SERVER_ERROR_500 = new ResponseType(500, "INTERNAL_SERVER_ERROR", true);
     public static BAD_REQUEST = new ResponseType(400, "BAD_REQUEST", true);
     public static AUTHORIZATION_ERROR = new ResponseType(401, "AUTHORIZATION_ERROR", true);
+    public static ACCESS_ERROR = new ResponseType(403, "ACCESS_ERROR", true);
 
     private static RESPONSE_TYPES = [
         this.SUCCESS,
