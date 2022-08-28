@@ -1,12 +1,13 @@
+// Load env
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import * as log4js from "log4js";
 import * as path from "path";
 
-// Check for development environment
-const devMode = (process.env.NODE_ENV || "development") == "development";
-
 // Get logs path and log level
 const logPath = path.join(__dirname, "../../", "logs");
-const logLevel = devMode ? "debug" : "info";
+const logLevel = process.env.LOG_LEVEL;
 
 // Configure log4js (log4shell does not exists)
 log4js.configure({
@@ -30,7 +31,7 @@ log4js.configure({
         },
         cli: {
             appenders: ["log", "console"],
-            level: "info",
+            level: logLevel,
         },
     },
 });
