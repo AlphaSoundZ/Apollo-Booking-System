@@ -20,6 +20,7 @@ interface Root {
     connectionStatus: ConnectionStatus;
     connectedSince: number;
     lastRedirectTimeout: number;
+    pingInterval: number;
 }
 
 class Event {
@@ -47,6 +48,7 @@ new Vue({
         connectionStatus: ConnectionStatus.CONNECTING,
         connectedSince: new Date().getTime(),
         lastRedirectTimeout: -1,
+        pingInterval: -1,
     } as Root,
     mounted() {
         this.websocketSetup();
@@ -55,6 +57,9 @@ new Vue({
         websocketSetup() {
             // Check for dev mode
             const devMode = process.env.NODE_ENV === "development";
+
+            if (this.pingInterval != -1) clearInterval(this.pingInterval);
+            if (this.websocket && !this.websocket.CLOSED) this.websocket.close();
 
             if (this.connectionStatus != ConnectionStatus.CONNECTING)
                 this.connectionStatus = ConnectionStatus.DISCONNECTED;
@@ -71,25 +76,24 @@ new Vue({
             this.websocket = new WebSocket(url);
 
             // Ping to check if server is responsive
-            let pingInterval: number;
             let pingTimeout = 0;
             this.websocket.onopen = () => {
                 console.log("Websocket connected");
                 this.connectionStatus = ConnectionStatus.CONNECTED;
                 this.connectedSince = new Date().getTime();
-                pingInterval = setInterval(() => {
+                this.pingInterval = setInterval(() => {
                     this.websocket?.send(JSON.stringify({ type: "event", event: "ping" }));
                     pingTimeout = setTimeout(() => {
                         console.log("No response from connection! Reopening connection");
                         this.websocketSetup();
-                    }, 3000);
-                }, 15000);
+                    }, 5000);
+                }, 30000);
             };
 
             // Reconnect when connection ends
             this.websocket.onclose = () => {
                 this.connectionStatus = ConnectionStatus.DISCONNECTED;
-                if (pingInterval) clearInterval(pingInterval);
+                if (this.pingInterval) clearInterval(this.pingInterval);
                 if (this.websocket) {
                     this.websocket.close();
                 }
@@ -133,7 +137,7 @@ new Vue({
         },
         triggerUIStateEvent(event: UIStateEvent, returnDelay = 3000) {
             console.log(event.state, event.data);
-            
+
             if (this.lastRedirectTimeout != -1) clearTimeout(this.lastRedirectTimeout);
 
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
