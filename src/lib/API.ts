@@ -21,6 +21,7 @@ interface RawBookingResponse {
 
 export class ResponseType {
     public static SUCCESS = new ResponseType(0, "SUCCESS");
+    public static OK = new ResponseType(200, "OK");
     public static DEVICE_RETURNED = new ResponseType(1, "DEVICE_RETURNED");
     public static USER_INFO = new ResponseType(2, "USER_INFO");
     public static UUID_NOT_FOUND = new ResponseType(3, "UUID_NOT_FOUND", true);
@@ -36,6 +37,7 @@ export class ResponseType {
 
     private static RESPONSE_TYPES = [
         this.SUCCESS,
+        this.OK,
         this.DEVICE_RETURNED,
         this.USER_INFO,
         this.UUID_NOT_FOUND,
