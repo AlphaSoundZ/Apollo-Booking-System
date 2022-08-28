@@ -4,7 +4,7 @@ interface RawBookingResponse {
     response: number;
     message: string;
     user?: {
-        name: string;
+        firstname: string;
         lastname: string;
         user_id: number;
         class: string;
