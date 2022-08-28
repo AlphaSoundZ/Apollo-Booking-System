@@ -7,7 +7,6 @@ import { DeviceType } from "./lib/API";
 
 const logger = log4js.getLogger("cli");
 const readline = createReadlineInterface(process.stdin, process.stdout);
-const token = process.env.REGISTER_TOKEN;
 
 export default class RegisterHandler implements Handler {
     private static lastSelectedType: DeviceType = DeviceType.IPad;
@@ -20,7 +19,7 @@ export default class RegisterHandler implements Handler {
     }
 
     public async run(uid: string) {
-        logger.debug("[[ Device Types ]]");
+        logger.info("[[ Device Types ]]");
         for (const deviceType of DeviceType.deviceTypes)
             logger.info("    " + deviceType.id + ": " + deviceType.name);
 
@@ -43,6 +42,7 @@ export default class RegisterHandler implements Handler {
                 const temp = DeviceType.getById(raw);
                 if (temp != null) selectedType = temp;
             } catch (_) {}
+        else selectedType = RegisterHandler.lastSelectedType;
 
         RegisterHandler.lastSelectedType = selectedType;
 
