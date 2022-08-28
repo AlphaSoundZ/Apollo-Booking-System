@@ -91,7 +91,7 @@ export default Vue.extend({
         user: {
             default: () => {
                 return {
-                    name: "",
+                    firstname: "",
                     lastname: "",
                     history: [] as Array<{
                         device_id: number;
@@ -105,7 +105,7 @@ export default Vue.extend({
     },
     computed: {
         username() {
-            return this.user.name + " " + this.user.lastname;
+            return this.user.firstname + " " + this.user.lastname;
         },
         canBook(): boolean {
             return true;

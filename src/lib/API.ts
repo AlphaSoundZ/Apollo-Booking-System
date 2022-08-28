@@ -101,7 +101,7 @@ export class DeviceType {
 }
 
 export interface User {
-    name: string;
+    firstname: string;
     lastname: string;
     user_id: number;
     class: string;
