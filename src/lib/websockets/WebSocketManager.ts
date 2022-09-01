@@ -8,7 +8,7 @@ import { UIState } from "../UIState";
  * Manages all websocket connections
  */
 export default class WebSocketManager {
-    public sockets: Array<WebSocketHandler> = [];
+    public sockets: WebSocketHandler[] = [];
 
     /**
      * Add a WebSocket to the manager
