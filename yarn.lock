@@ -1423,7 +1423,7 @@ methods@~1.1.2:
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
 "mfrc522-rpi@file:./libs/mfrc522-rpi":
-  version "2.1.5"
+  version "2.1.6"
   dependencies:
     rpi-softspi "^1.0.5"
     rpio "^1.3.0"

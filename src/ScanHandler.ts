@@ -37,7 +37,7 @@ export default class ScanHandler implements Handler {
             this.complete();
             return;
         }
-        if (info.response == ResponseType.DEVICE_RETURNED) {
+        if (info.response == ResponseType.RETURN_SUCCESS) {
             // UUID is device and specified device got returned
             logger.info(`Device returned (ID: ${info.device.id})`);
             this.socketManager.sendUI(UIState.DEVICE_RETURNED);

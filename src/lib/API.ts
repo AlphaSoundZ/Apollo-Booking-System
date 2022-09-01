@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 interface RawBookingResponse {
-    response: number;
+    response: string;
     message: string;
     user?: {
         firstname: string;
@@ -20,52 +20,51 @@ interface RawBookingResponse {
 }
 
 export class ResponseType {
-    public static SUCCESS = new ResponseType(0, "BOOKING_SUCCESS");
-    public static OK = new ResponseType(200, "OK");
-    public static DEVICE_RETURNED = new ResponseType(1, "DEVICE_RETURNED");
-    public static USER_INFO = new ResponseType(2, "USER_INFO");
-    public static UUID_NOT_FOUND = new ResponseType(3, "UUID_NOT_FOUND", true);
-    public static DEVICE_NOT_FOUND = new ResponseType(4, "DEVICE_NOT_FOUND", true);
-    public static YOU_ALREADY_BOOKING = new ResponseType(5, "YOU_ALREADY_BOOKING", true);
-    public static DEVICE_ALREADY_BOOKED = new ResponseType(6, "DEVICE_ALREADY_BOOKED", true);
-    public static NOT_A_DEVICE = new ResponseType(7, "NOT_A_DEVICE", true);
-    public static NO_UUID_SPECIFIED = new ResponseType(8, "NO_UUID_SPECIFIED", true);
-    public static UNEXPECTED_ERROR = new ResponseType(9, "UNEXPECTED_ERROR", true);
-    public static INTERNAL_SERVER_ERROR = new ResponseType(10, "INTERNAL_SERVER_ERROR", true);
-    public static INTERNAL_SERVER_ERROR_500 = new ResponseType(500, "INTERNAL_SERVER_ERROR", true);
-    public static BAD_REQUEST = new ResponseType(400, "BAD_REQUEST", true);
-    public static AUTHORIZATION_ERROR = new ResponseType(401, "AUTHORIZATION_ERROR", true);
-    public static ACCESS_ERROR = new ResponseType(403, "ACCESS_ERROR", true);
+    public static BOOKING_SUCCESS = new ResponseType("BOOKING_SUCCESS");
+    public static SUCCESS = new ResponseType("SUCCESS");
+    public static RETURN_SUCCESS = new ResponseType("RETURN_SUCCESS");
+    public static USER_INFO = new ResponseType("INFO_SUCCESS");
+    public static DEVICE_NOT_FOUND = new ResponseType("DEVICE_NOT_FOUND", true);
+    public static WRONG_DEVICE_TYPE = new ResponseType("WRONG_DEVICE_TYPE", true);
+    public static NOT_ALLOWED_FOR_THIS_CLASS = new ResponseType("NOT_ALLOWED_FOR_THIS_CLASS", true);
+    public static NOT_ALLOWED_FOR_THIS_DEVICE = new ResponseType(
+        "NOT_ALLOWED_FOR_THIS_DEVICE",
+        true,
+    );
+    public static DEVICE_ALREADY_EXISTS = new ResponseType("DEVICE_ALREADY_EXISTS", true);
+    public static TYPE_NOT_FOUND = new ResponseType("TYPE_NOT_FOUND", true);
+    public static RETURN_NOT_POSSIBLE = new ResponseType("RETURN_NOT_POSSIBLE", true);
+    public static UNEXPECTED_ERROR = new ResponseType("UNEXPECTED_ERROR", true);
+    public static REQUIRED_DATA_MISSING = new ResponseType("REQUIRED_DATA_MISSING", true);
+    public static AUTHORIZATION_ERROR = new ResponseType("NOT_AUTHORIZED", true);
+    public static ACCESS_ERROR = new ResponseType("NOT_ALLOWED", true);
 
     private static RESPONSE_TYPES = [
+        this.BOOKING_SUCCESS,
         this.SUCCESS,
-        this.OK,
-        this.DEVICE_RETURNED,
+        this.RETURN_SUCCESS,
         this.USER_INFO,
-        this.UUID_NOT_FOUND,
         this.DEVICE_NOT_FOUND,
-        this.YOU_ALREADY_BOOKING,
-        this.DEVICE_ALREADY_BOOKED,
-        this.NOT_A_DEVICE,
-        this.NO_UUID_SPECIFIED,
+        this.WRONG_DEVICE_TYPE,
+        this.NOT_ALLOWED_FOR_THIS_CLASS,
+        this.NOT_ALLOWED_FOR_THIS_DEVICE,
+        this.DEVICE_ALREADY_EXISTS,
+        this.TYPE_NOT_FOUND,
+        this.RETURN_NOT_POSSIBLE,
         this.UNEXPECTED_ERROR,
-        this.INTERNAL_SERVER_ERROR,
-        this.INTERNAL_SERVER_ERROR_500,
-        this.BAD_REQUEST,
+        this.REQUIRED_DATA_MISSING,
         this.AUTHORIZATION_ERROR,
     ];
 
-    public readonly identifier: number;
-    public readonly name: string;
+    public readonly identifier: string;
     public readonly error: boolean;
 
-    constructor(identifier: number, name: string, error = false) {
+    constructor(identifier: string, error = false) {
         this.identifier = identifier;
-        this.name = name;
         this.error = error;
     }
 
-    public static getByIdentifier(id: number) {
+    public static getByIdentifier(id: string) {
         for (const responseType of this.RESPONSE_TYPES) {
             if (responseType.identifier == id) return responseType;
         }
