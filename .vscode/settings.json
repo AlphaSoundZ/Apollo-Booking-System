@@ -1,4 +1,4 @@
 {
-    "cSpell.words": ["lastname", "mfrc", "Mfrc", "softspi", "uistate"],
+    "cSpell.words": ["lastname", "mfrc", "Mfrc", "multiuser", "softspi", "uistate"],
     "conventionalCommits.scopes": ["api", "conf", "reader", "deps", "ui"]
 }

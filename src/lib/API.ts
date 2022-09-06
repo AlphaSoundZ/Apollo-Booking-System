@@ -1,24 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 
-interface RawBookingResponse {
-    response: string;
-    message: string;
-    user?: {
-        firstname: string;
-        lastname: string;
-        user_id: number;
-        class: string;
-        status: string;
-        history?: Array<unknown>;
-    };
-    device?: {
-        id: number;
-        device_type: string;
-        status: boolean;
-        rfid_code: string;
-    };
-}
-
 export class ResponseType {
     public static BOOKING_SUCCESS = new ResponseType("BOOKING_SUCCESS");
     public static SUCCESS = new ResponseType("SUCCESS");
@@ -99,12 +80,41 @@ export class DeviceType {
     }
 }
 
+interface RawBookingResponse {
+    response: string;
+    message: string;
+    data: {
+        user?: {
+            firstname: string;
+            lastname: string;
+            user_id: number;
+            class: string;
+            multiuser: boolean;
+            status: string;
+            history?: UserHistoryDevice[];
+        };
+        device?: {
+            id: number;
+            device_type: string;
+            status: boolean;
+            rfid_code: string;
+        };
+    };
+}
+
+export interface UserHistoryDevice {
+    device_id: string;
+    begin: string;
+    end: string;
+    device_type: string;
+}
+
 export interface User {
     firstname: string;
     lastname: string;
     user_id: number;
     class: string;
-    teacher?: boolean;
+    multiuser: boolean;
     history?: Array<unknown>;
 }
 
@@ -118,8 +128,10 @@ export interface Device {
 export interface BookingResponse {
     response: ResponseType;
     message: string;
-    user?: User;
-    device?: Device;
+    data: {
+        user?: User;
+        device?: Device;
+    };
 }
 
 export interface RegisterDeviceResponse {
@@ -179,11 +191,6 @@ export default class API {
     private parseBookingResponse(response: { data: RawBookingResponse }): BookingResponse {
         return Object.assign(response.data, {
             response: ResponseType.getByIdentifier(response.data.response),
-            user: response.data.user
-                ? Object.assign(response.data.user, {
-                      teacher: response.data.user && response.data.user.class == "Lehrer",
-                  })
-                : undefined,
         });
     }
 }

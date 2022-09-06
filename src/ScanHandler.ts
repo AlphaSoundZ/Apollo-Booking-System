@@ -39,14 +39,14 @@ export default class ScanHandler implements Handler {
         }
         if (info.response == ResponseType.RETURN_SUCCESS) {
             // UUID is device and specified device got returned
-            logger.info(`Device returned (ID: ${info.device.id})`);
+            logger.info(`Device returned (ID: ${info.data.device.id})`);
             this.socketManager.sendUI(UIState.DEVICE_RETURNED);
             this.complete();
         } else if (info.response == ResponseType.USER_INFO) {
             // UUID is user and info got returned
             this.uid = uid;
-            this.socketManager.sendUI(UIState.USER_INFO, { user: info.user });
-            this.complete(true, info.user.teacher);
+            this.socketManager.sendUI(UIState.USER_INFO, { user: info.data.user });
+            this.complete(true, info.data.user.multiuser);
         } else if (info.response.error) {
             // An server error occurred
             this.socketManager.sendError(
@@ -103,13 +103,13 @@ export default class ScanHandler implements Handler {
             return;
         }
 
-        logger.info(`Booking completed (ID: ${booking.device.id})`);
+        logger.info(`Booking completed (ID: ${booking.data.device.id})`);
         this.socketManager.sendUI(
             UIState.DEVICE_BOOKING_COMPLETED,
             {},
-            booking.user.teacher ? ReturnTarget.USER_HOME : ReturnTarget.HOME,
+            booking.data.user.multiuser ? ReturnTarget.USER_HOME : ReturnTarget.HOME,
         );
-        this.complete(booking.user.teacher);
+        this.complete(booking.data.user.multiuser);
     }
 
     private complete(moreActionsAllowed = false, infiniteLogoutTimeout = false) {
