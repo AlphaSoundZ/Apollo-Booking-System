@@ -15,6 +15,7 @@ This page contains all information required to learn about the program's structu
         -   [Debian and Ubuntu](#debian-and-ubuntu)
         -   [Other system](#other-system)
     -   [Yarn](#yarn)
+        -   [Dependency update problems](#dependency-update-problems)
     -   [Building the UI](#building-the-ui)
 -   [Running the program](#running-the-program)
 -   [Registering new devices](#registering-new-devices)
@@ -89,7 +90,7 @@ https://nodejs.org/en/download/package-manager/
 
 ### Yarn
 
-The whole programs presumes that yarn is installed. This is a very easy thing as it can be easily installed using the node package manager (npm).
+The build pipeline assumes that yarn is installed. It can be easily installed using the node package manager (npm).
 
 ```console
 $ npm install -g yarn
@@ -99,6 +100,15 @@ This command will install yarn globally on the machine and allows the use of it 
 
 For a more detailed explanation visit the yarn installation guid:  
 https://yarnpkg.com/getting-started/install
+
+#### Dependency update problems
+
+Because of a [change in node.js](https://stackoverflow.com/a/69746937/11605047), there is a problem within the build process. To fix that issue, provide following environment variable before calling any build / dependency management commands: `NODE_OPTIONS=--openssl-legacy-provider`
+
+This can be done by executing following command:
+```bash
+$ export NODE_OPTIONS=--openssl-legacy-provider
+```
 
 ### Building the UI
 
