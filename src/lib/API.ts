@@ -213,7 +213,7 @@ export default class API {
         }
     }
 
-    private catchAPIError(error: any) {
+    private catchAPIError(error: unknown) {
         if (!axios.isAxiosError(error)) throw error;
         if (!error.response || !error.response.data.response) throw error;
 
@@ -228,7 +228,7 @@ export default class API {
         });
     }
 
-    public static isResponseError(error: any): error is ResponseError {
+    public static isResponseError(error: unknown): error is ResponseError {
         return error instanceof ResponseError;
     }
 }
