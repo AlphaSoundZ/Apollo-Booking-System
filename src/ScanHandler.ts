@@ -33,7 +33,10 @@ export default class ScanHandler implements Handler {
         try {
             info = await this.api.unknownActionForUid(uid);
         } catch (err) {
-            this.socketManager.catchError(err, "Error occurred while checking uid.");
+            if (API.isResponseError(err))
+                this.socketManager.sendError(new DisplayError(err.response, err.message));
+            else this.socketManager.catchError(err, "Error occurred while checking uid.");
+
             this.complete();
             return;
         }
@@ -85,11 +88,20 @@ export default class ScanHandler implements Handler {
         try {
             booking = await this.api.book(this.uid, uid);
         } catch (err) {
-            this.socketManager.catchError(
-                err,
-                "Error occurred while booking device.",
-                ReturnTarget.USER_HOME,
-            );
+            if (API.isResponseError(err)) {
+                logger.info(
+                    `Booking failed [caught exception] (${err.response.identifier}): ${err.message}`,
+                );
+                this.socketManager.sendError(
+                    new DisplayError(err.response, err.message, ReturnTarget.USER_HOME),
+                );
+            } else {
+                this.socketManager.catchError(
+                    err,
+                    "Error occurred while booking device.",
+                    ReturnTarget.USER_HOME,
+                );
+            }
             this.complete(true);
             return;
         }

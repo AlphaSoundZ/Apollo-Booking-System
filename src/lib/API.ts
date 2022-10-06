@@ -53,6 +53,15 @@ export class ResponseType {
     }
 }
 
+export class ResponseError extends Error {
+    public response: ResponseType;
+
+    constructor(response: ResponseType, message: string) {
+        super(message);
+        this.response = response;
+    }
+}
+
 export class DeviceType {
     public static readonly IPad = new DeviceType("Ipad", 1);
     public static readonly UserCard = new DeviceType("UserCard", 2);
@@ -161,36 +170,65 @@ export default class API {
     }
 
     public async checkToken(): Promise<CheckTokenResponse> {
-        const data = (await this.client.post("/check_token")).data;
-        return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+        try {
+            const data = (await this.client.post("/check_token")).data;
+            return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+        } catch (err) {
+            this.catchAPIError(err);
+        }
     }
 
     public async registerDevice(uid: string, type: DeviceType): Promise<RegisterDeviceResponse> {
-        const data = (await this.client.post("/add_device", { rfid_code: uid, type: type.id }))
-            .data;
-        return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+        try {
+            const data = (await this.client.post("/add_device", { rfid_code: uid, type: type.id }))
+                .data;
+            return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+        } catch (err) {
+            this.catchAPIError(err);
+        }
     }
 
     public async unknownActionForUid(uid: string): Promise<BookingResponse> {
-        return this.parseBookingResponse(
-            await this.client.post<RawBookingResponse>("/booking", {
-                uid_1: uid,
-            }),
-        );
+        try {
+            return this.parseBookingResponse(
+                await this.client.post<RawBookingResponse>("/booking", {
+                    uid_1: uid,
+                }),
+            );
+        } catch (err) {
+            this.catchAPIError(err);
+        }
     }
 
     public async book(userUid: string, deviceUid: string): Promise<BookingResponse> {
-        return this.parseBookingResponse(
-            await this.client.post<RawBookingResponse>("/booking", {
-                uid_1: userUid,
-                uid_2: deviceUid,
-            }),
-        );
+        try {
+            return this.parseBookingResponse(
+                await this.client.post<RawBookingResponse>("/booking", {
+                    uid_1: userUid,
+                    uid_2: deviceUid,
+                }),
+            );
+        } catch (err) {
+            this.catchAPIError(err);
+        }
+    }
+
+    private catchAPIError(error: any) {
+        if (!axios.isAxiosError(error)) throw error;
+        if (!error.response || !error.response.data.response) throw error;
+
+        const responseType = ResponseType.getByIdentifier(error.response.data.response);
+        if (!responseType) throw error;
+        throw new ResponseError(responseType, error.response.data.message);
     }
 
     private parseBookingResponse(response: { data: RawBookingResponse }): BookingResponse {
         return Object.assign(response.data, {
             response: ResponseType.getByIdentifier(response.data.response),
         });
+    }
+
+    public static isResponseError(error: any): error is ResponseError {
+        return error instanceof ResponseError;
     }
 }
