@@ -42,7 +42,7 @@ export default class ScanHandler implements Handler {
         }
         if (info.response == ResponseType.RETURN_SUCCESS) {
             // UUID is device and specified device got returned
-            logger.info(`Device returned (ID: ${info.data.device.id})`);
+            logger.info(`Device returned (ID: ${info.data.device.device_id})`);
             this.socketManager.sendUI(UIState.DEVICE_RETURNED);
             this.complete();
         } else if (info.response == ResponseType.USER_INFO) {
@@ -115,7 +115,7 @@ export default class ScanHandler implements Handler {
             return;
         }
 
-        logger.info(`Booking completed (ID: ${booking.data.device.id})`);
+        logger.info(`Booking completed (ID: ${booking.data.device.device_id})`);
         this.socketManager.sendUI(
             UIState.DEVICE_BOOKING_COMPLETED,
             {},

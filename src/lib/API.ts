@@ -103,7 +103,7 @@ interface RawBookingResponse {
             history?: UserHistoryDevice[];
         };
         device?: {
-            id: number;
+            device_id: number;
             device_type: string;
             status: boolean;
             rfid_code: string;
@@ -128,7 +128,7 @@ export interface User {
 }
 
 export interface Device {
-    id: number;
+    device_id: number;
     device_type: string;
     status: boolean;
     rfid_code: string;
