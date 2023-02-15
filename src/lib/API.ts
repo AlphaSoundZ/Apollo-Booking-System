@@ -8,10 +8,7 @@ export class ResponseType {
     public static DEVICE_NOT_FOUND = new ResponseType("DEVICE_NOT_FOUND", true);
     public static WRONG_DEVICE_TYPE = new ResponseType("WRONG_DEVICE_TYPE", true);
     public static NOT_ALLOWED_FOR_THIS_CLASS = new ResponseType("NOT_ALLOWED_FOR_THIS_CLASS", true);
-    public static NOT_ALLOWED_FOR_THIS_DEVICE = new ResponseType(
-        "NOT_ALLOWED_FOR_THIS_DEVICE",
-        true,
-    );
+    public static NOT_ALLOWED_FOR_THIS_DEVICE = new ResponseType("NOT_ALLOWED_FOR_THIS_DEVICE", true);
     public static DEVICE_ALREADY_EXISTS = new ResponseType("DEVICE_ALREADY_EXISTS", true);
     public static TYPE_NOT_FOUND = new ResponseType("TYPE_NOT_FOUND", true);
     public static RETURN_NOT_POSSIBLE = new ResponseType("RETURN_NOT_POSSIBLE", true);
@@ -180,8 +177,7 @@ export default class API {
 
     public async registerDevice(uid: string, type: DeviceType): Promise<RegisterDeviceResponse> {
         try {
-            const data = (await this.client.post("/add_device", { rfid_code: uid, type: type.id }))
-                .data;
+            const data = (await this.client.post("/add_device", { rfid_code: uid, type: type.id })).data;
             return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
         } catch (err) {
             this.catchAPIError(err);
@@ -214,11 +210,20 @@ export default class API {
     }
 
     private catchAPIError(error: unknown) {
-        if (!axios.isAxiosError(error)) throw error;
-        if (!error.response || !error.response.data.response) throw error;
+        if (!axios.isAxiosError(error)) {
+            console.error("Unrecognized client side-error");
+            throw error;
+        }
+        if (!error.response || !error.response.data.response) {
+            console.error("Malformed API error");
+            throw error;
+        }
 
         const responseType = ResponseType.getByIdentifier(error.response.data.response);
-        if (!responseType) throw error;
+        if (!responseType) {
+            console.error("Unknown API error");
+            throw error;
+        }
         throw new ResponseError(responseType, error.response.data.message);
     }
 
