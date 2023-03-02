@@ -48,7 +48,7 @@ export default class ScanHandler implements Handler {
             // UUID is user and info got returned
             this.uid = uid;
             this.socketManager.sendUI(UIState.USER_INFO, { user: info.data.user });
-            this.complete(true, info.data.user.multiuser);
+            this.complete(true, info.data.user.multi_booking);
         } else if (info.response.error) {
             // An server error occurred
             this.socketManager.sendError(new DisplayError(info.response, info.message, ReturnTarget.HOME));
@@ -96,10 +96,10 @@ export default class ScanHandler implements Handler {
             return;
         }
 
-        const isMultiuser = booking.data.user.multiuser;
-        logger.info(`Booking completed (ID: ${booking.data.device.device_id}) [multiuser: ${isMultiuser}]`);
-        this.socketManager.sendUI(UIState.DEVICE_BOOKING_COMPLETED, {}, isMultiuser ? ReturnTarget.USER_HOME : ReturnTarget.HOME);
-        this.complete(isMultiuser);
+        const isMultiBooking = booking.data.user.multi_booking;
+        logger.info(`Booking completed (ID: ${booking.data.device.device_id}) [multibooking: ${isMultiBooking}]`);
+        this.socketManager.sendUI(UIState.DEVICE_BOOKING_COMPLETED, {}, isMultiBooking ? ReturnTarget.USER_HOME : ReturnTarget.HOME);
+        this.complete(isMultiBooking);
     }
 
     private complete(moreActionsAllowed = false, infiniteLogoutTimeout = false) {

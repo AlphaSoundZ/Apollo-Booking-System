@@ -95,7 +95,7 @@ interface RawBookingResponse {
             lastname: string;
             user_id: number;
             class: string;
-            multiuser: boolean;
+            multi_booking: boolean;
             status: string;
             history?: UserHistoryDevice[];
         };
@@ -120,7 +120,7 @@ export interface User {
     lastname: string;
     user_id: number;
     class: string;
-    multiuser: boolean;
+    multi_booking: boolean;
     history?: Array<unknown>;
 }
 
