@@ -33,8 +33,7 @@ export default class ScanHandler implements Handler {
         try {
             info = await this.api.unknownActionForUid(uid);
         } catch (err) {
-            if (API.isResponseError(err))
-                this.socketManager.sendError(new DisplayError(err.response, err.message));
+            if (API.isResponseError(err)) this.socketManager.sendError(new DisplayError(err.response, err.message));
             else this.socketManager.catchError(err, "Error occurred while checking uid.");
 
             this.complete();
@@ -49,22 +48,14 @@ export default class ScanHandler implements Handler {
             // UUID is user and info got returned
             this.uid = uid;
             this.socketManager.sendUI(UIState.USER_INFO, { user: info.data.user });
-            this.complete(true, info.data.user.multiuser);
+            this.complete(true, info.data.user.multi_booking);
         } else if (info.response.error) {
             // An server error occurred
-            this.socketManager.sendError(
-                new DisplayError(info.response, info.message, ReturnTarget.HOME),
-            );
+            this.socketManager.sendError(new DisplayError(info.response, info.message, ReturnTarget.HOME));
             this.complete();
         } else {
             // Unexpected result
-            this.socketManager.sendError(
-                new DisplayError(
-                    ResponseType.UNEXPECTED_ERROR,
-                    "Unknown API response.",
-                    ReturnTarget.HOME,
-                ),
-            );
+            this.socketManager.sendError(new DisplayError(ResponseType.UNEXPECTED_ERROR, "Unknown API response.", ReturnTarget.HOME));
             this.complete();
         }
     }
@@ -89,18 +80,10 @@ export default class ScanHandler implements Handler {
             booking = await this.api.book(this.uid, uid);
         } catch (err) {
             if (API.isResponseError(err)) {
-                logger.info(
-                    `Booking failed [caught exception] (${err.response.identifier}): ${err.message}`,
-                );
-                this.socketManager.sendError(
-                    new DisplayError(err.response, err.message, ReturnTarget.USER_HOME),
-                );
+                logger.info(`Booking failed [caught exception] (${err.response.identifier}): ${err.message}`);
+                this.socketManager.sendError(new DisplayError(err.response, err.message, ReturnTarget.USER_HOME));
             } else {
-                this.socketManager.catchError(
-                    err,
-                    "Error occurred while booking device.",
-                    ReturnTarget.USER_HOME,
-                );
+                this.socketManager.catchError(err, "Error occurred while booking device.", ReturnTarget.USER_HOME);
             }
             this.complete(true);
             return;
@@ -108,20 +91,15 @@ export default class ScanHandler implements Handler {
 
         if (booking.response.error) {
             logger.info(`Booking failed (${booking.response.identifier}): ${booking.message}`);
-            this.socketManager.sendError(
-                new DisplayError(booking.response, booking.message, ReturnTarget.USER_HOME),
-            );
+            this.socketManager.sendError(new DisplayError(booking.response, booking.message, ReturnTarget.USER_HOME));
             this.complete(true);
             return;
         }
 
-        logger.info(`Booking completed (ID: ${booking.data.device.device_id})`);
-        this.socketManager.sendUI(
-            UIState.DEVICE_BOOKING_COMPLETED,
-            {},
-            booking.data.user.multiuser ? ReturnTarget.USER_HOME : ReturnTarget.HOME,
-        );
-        this.complete(booking.data.user.multiuser);
+        const isMultiBooking = booking.data.user.multi_booking;
+        logger.info(`Booking completed (ID: ${booking.data.device.device_id}) [multibooking: ${isMultiBooking}]`);
+        this.socketManager.sendUI(UIState.DEVICE_BOOKING_COMPLETED, {}, isMultiBooking ? ReturnTarget.USER_HOME : ReturnTarget.HOME);
+        this.complete(isMultiBooking);
     }
 
     private complete(moreActionsAllowed = false, infiniteLogoutTimeout = false) {
