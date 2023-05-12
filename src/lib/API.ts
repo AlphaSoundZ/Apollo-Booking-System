@@ -101,6 +101,9 @@ interface RawBookingResponse {
             multiuser: boolean;
             status: string;
             history?: UserHistoryDevice[];
+            amount_of_devices: number;
+            amount_of_devices_in_session: number;
+            amount_of_devices_ever: number;
         };
         device?: {
             device_id: number;
@@ -125,6 +128,9 @@ export interface User {
     class: string;
     multiuser: boolean;
     history?: Array<unknown>;
+    amount_of_devices: number;
+    amount_of_devices_in_session: number;
+    amount_of_devices_ever: number;
 }
 
 export interface Device {
