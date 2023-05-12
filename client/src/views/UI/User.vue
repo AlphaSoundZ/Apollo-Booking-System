@@ -60,7 +60,12 @@
                         <h4>{{ booking.device_type }}</h4>
                         <p v-if="!booking.end">
                             Aktuell Ausgeliehen <br />
-                            Seit dem {{ dayjs(booking.begin).format("D.M.YYYY HH:mm") }} Uhr
+                            <template v-if="dayjs(booking.begin).isToday()">
+                                Seit {{ dayjs(booking.begin).format("HH:mm") }} Uhr
+                            </template>
+                            <template v-else>
+                                Seit dem {{ dayjs(booking.begin).format("D.M.YYYY HH:mm") }} Uhr
+                            </template>
                         </p>
                         <p v-else>
                             Vom {{ dayjs(booking.begin).format("D.M.YYYY HH:mm") }} Uhr bis zum
@@ -84,11 +89,13 @@ import DeviceIcon from "@/components/DeviceIcon.vue";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
+import isToday from "dayjs/plugin/isToday";
 import "dayjs/locale/de";
 
 dayjs.locale("de");
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(isToday);
 
 export default Vue.extend({
     components: { BigMessage, CombinedIcon, DeviceIcon },
