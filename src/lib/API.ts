@@ -174,7 +174,7 @@ export default class API {
 
     public async checkToken(): Promise<CheckTokenResponse> {
         try {
-            const data = (await this.client.post("/check_token")).data;
+            const data = (await this.client.post("/token/validate")).data;
             return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
         } catch (err) {
             this.catchAPIError(err);
@@ -183,7 +183,7 @@ export default class API {
 
     public async registerDevice(uid: string, type: DeviceType): Promise<RegisterDeviceResponse> {
         try {
-            const data = (await this.client.post("/add_device", { rfid_code: uid, type: type.id })).data;
+            const data = (await this.client.post("/device/create", { rfid_code: uid, type: type.id })).data;
             return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
         } catch (err) {
             this.catchAPIError(err);
