@@ -12,6 +12,7 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
     {
         path: "/ui",
+        alias: "/",
         component: UI,
         props: true,
         children: [
@@ -46,7 +47,7 @@ const routes: Array<RouteConfig> = [
                 props: true,
             },
         ],
-    },
+    }
 ];
 
 const router = new VueRouter({
