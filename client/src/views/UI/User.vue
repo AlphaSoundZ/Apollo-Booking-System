@@ -37,10 +37,13 @@
 
         <div class="infos" v-if="user.history && user.history.length > 0" ref="infos">
             <h2>Zuletzt Ausgeliehen</h2>
-            <p class="quick-status">
+            <p class="quick-status" v-if="user.devices_amount.currently > 0">
                 Es werden noch
                 <span>{{ user.devices_amount.currently }}</span> von
                 <span>{{ user.devices_amount.session }}</span> Geräten ausgeliehen
+            </p>
+            <p class="quick-status" v-else>
+                Du leihst aktuell keine Geräte aus
             </p>
             <div class="recently-booked">
                 <div class="booking" v-for="booking in user.history" :key="booking.device_id">
