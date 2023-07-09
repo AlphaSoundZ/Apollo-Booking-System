@@ -39,8 +39,8 @@
             <h2>Zuletzt Ausgeliehen</h2>
             <p class="quick-status">
                 Es werden noch
-                <span>{{ user.amount_of_devices }}</span> von
-                <span>{{ user.amount_of_devices_in_session }}</span> Geräten ausgeliehen
+                <span>{{ user.devices_amount.currently }}</span> von
+                <span>{{ user.devices_amount.session }}</span> Geräten ausgeliehen
             </p>
             <div class="recently-booked">
                 <div class="booking" v-for="booking in user.history" :key="booking.device_id">
@@ -105,9 +105,11 @@ export default Vue.extend({
                 return {
                     firstname: "",
                     lastname: "",
-                    amount_of_devices: 0,
-                    amount_of_devices_in_session: 0,
-                    amount_of_devices_ever: 0,
+                    devices_amount: {
+                        currently: 0,
+                        session: 0,
+                        ever: 0,
+                    },
                     history: [] as Array<{
                         device_id: number;
                         device_type: string;
@@ -198,10 +200,11 @@ export default Vue.extend({
 
     .quick-status {
         background-color: #f3f4f9;
-        padding: 25px 7px;
+        padding: 25px 7px 25px 27px;
         font-size: 24px;
         font-weight: 300;
         border-radius: 50px;
+        margin-bottom: 20px;
 
         span {
             font-weight: 400;

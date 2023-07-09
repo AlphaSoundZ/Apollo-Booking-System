@@ -99,9 +99,11 @@ interface RawBookingResponse {
             multi_booking: boolean;
             status: string;
             history?: UserHistoryDevice[];
-            amount_of_devices: number;
-            amount_of_devices_in_session: number;
-            amount_of_devices_ever: number;
+            devices_amount: {
+                currently: number;
+                session: number;
+                ever: number;
+            }
         };
         device?: {
             device_id: number;
@@ -126,9 +128,11 @@ export interface User {
     class: string;
     multi_booking: boolean;
     history?: Array<unknown>;
-    amount_of_devices: number;
-    amount_of_devices_in_session: number;
-    amount_of_devices_ever: number;
+    devices_amount: {
+        currently: number;
+        session: number;
+        ever: number;
+    }
 }
 
 export interface Device {
@@ -161,7 +165,7 @@ export interface CheckTokenResponse {
 export default class API {
     private apiUrl: string;
     private apiToken: string;
-    private client: AxiosInstance;
+    private client: AxiosInstance; 
 
     constructor(apiUrl: string, apiToken: string) {
         this.apiUrl = apiUrl;
