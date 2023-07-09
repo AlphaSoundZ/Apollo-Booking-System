@@ -60,7 +60,7 @@ export default class WebSocketManager {
      */
     public async sendError(error: DisplayError) {
         await this.send("error", {
-            code: error.response.identifier,
+            code: error.status.identifier,
             message: error.message,
             returnTarget: error.returnTarget,
         });

@@ -6,13 +6,13 @@ export enum ReturnTarget {
 }
 
 export default class DisplayError {
-    public response: ResponseType;
+    public status: ResponseType;
     public message: string;
     public returnTarget: ReturnTarget;
 
-    constructor(response: ResponseType, message: string, returnTarget = ReturnTarget.HOME) {
-        if (!response.error) this.response = ResponseType.UNEXPECTED_ERROR;
-        else this.response = response;
+    constructor(status: ResponseType, message: string, returnTarget = ReturnTarget.HOME) {
+        if (!status.error) this.status = ResponseType.UNEXPECTED_ERROR;
+        else this.status = status;
         this.message = message;
         this.returnTarget = returnTarget;
     }

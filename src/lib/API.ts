@@ -6,12 +6,12 @@ export class ResponseType {
     public static RETURN_SUCCESS = new ResponseType("RETURN_SUCCESS");
     public static USER_INFO = new ResponseType("INFO_SUCCESS");
     public static DEVICE_NOT_FOUND = new ResponseType("DEVICE_NOT_FOUND", true);
-    public static WRONG_DEVICE_TYPE = new ResponseType("WRONG_DEVICE_TYPE", true);
+    public static WRONG_DEVICE_TYPE = new ResponseType("DEVICE_TYPE_NOT_FOUND", true);
     public static NOT_ALLOWED_FOR_THIS_CLASS = new ResponseType("NOT_ALLOWED_FOR_THIS_CLASS", true);
-    public static NOT_ALLOWED_FOR_THIS_DEVICE = new ResponseType("NOT_ALLOWED_FOR_THIS_DEVICE", true);
+    public static NOT_ALLOWED_FOR_THIS_DEVICE = new ResponseType("DEVICE_ALREADY_LENT", true);
     public static DEVICE_ALREADY_EXISTS = new ResponseType("DEVICE_ALREADY_EXISTS", true);
-    public static TYPE_NOT_FOUND = new ResponseType("TYPE_NOT_FOUND", true);
-    public static RETURN_NOT_POSSIBLE = new ResponseType("RETURN_NOT_POSSIBLE", true);
+    public static TYPE_NOT_FOUND = new ResponseType("TYPE_NOT_FOUND", true); // Fix: This is not used, instead DEVICE_TYPE_NOT_FOUND and USERCARD_TYPE_NOT_FOUND are used!
+    public static RETURN_NOT_POSSIBLE = new ResponseType("DEVICE_NOT_LENT", true);
     public static UNEXPECTED_ERROR = new ResponseType("UNEXPECTED_ERROR", true);
     public static REQUIRED_DATA_MISSING = new ResponseType("REQUIRED_DATA_MISSING", true);
     public static AUTHORIZATION_ERROR = new ResponseType("NOT_AUTHORIZED", true);
@@ -51,15 +51,16 @@ export class ResponseType {
 }
 
 export class ResponseError extends Error {
-    public response: ResponseType;
+    public status: ResponseType;
 
-    constructor(response: ResponseType, message: string) {
+    constructor(status: ResponseType, message: string) {
         super(message);
-        this.response = response;
+        this.status = status;
     }
 }
 
 export class DeviceType {
+    // TODO: Create device types automatically from database (GET api/v5/device/type)
     public static readonly IPad = new DeviceType("Ipad", 1);
     public static readonly UserCard = new DeviceType("UserCard", 2);
     public static readonly SurfaceBook = new DeviceType("Surface Book", 3);
@@ -87,7 +88,7 @@ export class DeviceType {
 }
 
 interface RawBookingResponse {
-    response: string;
+    status: string;
     message: string;
     data: {
         user?: {
@@ -138,7 +139,7 @@ export interface Device {
 }
 
 export interface BookingResponse {
-    response: ResponseType;
+    status: ResponseType;
     message: string;
     data: {
         user?: User;
@@ -147,12 +148,12 @@ export interface BookingResponse {
 }
 
 export interface RegisterDeviceResponse {
-    response: ResponseType;
+    status: ResponseType;
     message: string;
 }
 
 export interface CheckTokenResponse {
-    response: ResponseType;
+    status: ResponseType;
     message: string;
     permissions: string[];
 }
@@ -175,7 +176,7 @@ export default class API {
     public async checkToken(): Promise<CheckTokenResponse> {
         try {
             const data = (await this.client.post("/token/validate")).data;
-            return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+            return Object.assign(data, { status: ResponseType.getByIdentifier(data.status) });
         } catch (err) {
             this.catchAPIError(err);
         }
@@ -184,7 +185,7 @@ export default class API {
     public async registerDevice(uid: string, type: DeviceType): Promise<RegisterDeviceResponse> {
         try {
             const data = (await this.client.post("/device/create", { rfid_code: uid, type: type.id })).data;
-            return Object.assign(data, { response: ResponseType.getByIdentifier(data.response) });
+            return Object.assign(data, { status: ResponseType.getByIdentifier(data.status) });
         } catch (err) {
             this.catchAPIError(err);
         }
@@ -220,12 +221,12 @@ export default class API {
             console.error("Unrecognized client side-error");
             throw error;
         }
-        if (!error.response || !error.response.data.response) {
+        if (!error.response || !error.response.data.status) {
             console.error("Malformed API error");
             throw error;
         }
 
-        const responseType = ResponseType.getByIdentifier(error.response.data.response);
+        const responseType = ResponseType.getByIdentifier(error.response.data.status);
         if (!responseType) {
             console.error("Unknown API error");
             throw error;
@@ -235,7 +236,7 @@ export default class API {
 
     private parseBookingResponse(response: { data: RawBookingResponse }): BookingResponse {
         return Object.assign(response.data, {
-            response: ResponseType.getByIdentifier(response.data.response),
+            status: ResponseType.getByIdentifier(response.data.status),
         });
     }
 

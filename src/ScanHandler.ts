@@ -33,25 +33,25 @@ export default class ScanHandler implements Handler {
         try {
             info = await this.api.unknownActionForUid(uid);
         } catch (err) {
-            if (API.isResponseError(err)) this.socketManager.sendError(new DisplayError(err.response, err.message));
+            if (API.isResponseError(err)) this.socketManager.sendError(new DisplayError(err.status, err.message));
             else this.socketManager.catchError(err, "Error occurred while checking uid.");
 
             this.complete();
             return;
         }
-        if (info.response == ResponseType.RETURN_SUCCESS) {
+        if (info.status == ResponseType.RETURN_SUCCESS) {
             // UUID is device and specified device got returned
             logger.info(`Device returned (ID: ${info.data.device.device_id})`);
             this.socketManager.sendUI(UIState.DEVICE_RETURNED);
             this.complete();
-        } else if (info.response == ResponseType.USER_INFO) {
+        } else if (info.status == ResponseType.USER_INFO) {
             // UUID is user and info got returned
             this.uid = uid;
             this.socketManager.sendUI(UIState.USER_INFO, { user: info.data.user });
             this.complete(true, info.data.user.multi_booking);
-        } else if (info.response.error) {
+        } else if (info.status.error) {
             // An server error occurred
-            this.socketManager.sendError(new DisplayError(info.response, info.message, ReturnTarget.HOME));
+            this.socketManager.sendError(new DisplayError(info.status, info.message, ReturnTarget.HOME));
             this.complete();
         } else {
             // Unexpected result
@@ -80,8 +80,8 @@ export default class ScanHandler implements Handler {
             booking = await this.api.book(this.uid, uid);
         } catch (err) {
             if (API.isResponseError(err)) {
-                logger.info(`Booking failed [caught exception] (${err.response.identifier}): ${err.message}`);
-                this.socketManager.sendError(new DisplayError(err.response, err.message, ReturnTarget.USER_HOME));
+                logger.info(`Booking failed [caught exception] (${err.status.identifier}): ${err.message}`);
+                this.socketManager.sendError(new DisplayError(err.status, err.message, ReturnTarget.USER_HOME));
             } else {
                 this.socketManager.catchError(err, "Error occurred while booking device.", ReturnTarget.USER_HOME);
             }
@@ -89,9 +89,9 @@ export default class ScanHandler implements Handler {
             return;
         }
 
-        if (booking.response.error) {
-            logger.info(`Booking failed (${booking.response.identifier}): ${booking.message}`);
-            this.socketManager.sendError(new DisplayError(booking.response, booking.message, ReturnTarget.USER_HOME));
+        if (booking.status.error) {
+            logger.info(`Booking failed (${booking.status.identifier}): ${booking.message}`);
+            this.socketManager.sendError(new DisplayError(booking.status, booking.message, ReturnTarget.USER_HOME));
             this.complete(true);
             return;
         }

@@ -54,7 +54,7 @@ export default class RegisterHandler implements Handler {
     private async register(uid: string, type: DeviceType) {
         try {
             const response = await this.api.registerDevice(uid, type);
-            if (!response.response.error)
+            if (!response.status.error)
                 logger.info('Successfully registered "' + uid + '" as ' + type.name);
             else logger.error("Error while registering device: " + response.message);
         } catch (err) {
