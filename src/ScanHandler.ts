@@ -98,7 +98,7 @@ export default class ScanHandler implements Handler {
 
         const isMultiBooking = booking.data.user.multi_booking;
         logger.info(`Booking completed (ID: ${booking.data.device.device_id}) [multibooking: ${isMultiBooking}]`);
-        this.socketManager.sendUI(UIState.DEVICE_BOOKING_COMPLETED, {}, isMultiBooking ? ReturnTarget.USER_HOME : ReturnTarget.HOME);
+        this.socketManager.sendUI(UIState.DEVICE_BOOKING_COMPLETED, { user: booking.data.user }, isMultiBooking ? ReturnTarget.USER_HOME : ReturnTarget.HOME);
         this.complete(isMultiBooking);
     }
 

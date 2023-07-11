@@ -142,7 +142,8 @@ new Vue({
 
             if (event.state == UIState.USER_INFO) this.lastUser = event.data;
             if (event.state == UIState.USER_LOGOUT) event.returnTarget = ReturnTarget.HOME;
-            if (event.state == UIState.DEVICE_RETURNED) event.returnTarget = ReturnTarget.HOME;
+            if (event.state == UIState.DEVICE_RETURNED) event.returnTarget = ReturnTarget.HOME
+            if (event.state == UIState.DEVICE_BOOKING_COMPLETED) this.lastUser = event.data;
 
             this.navPage(event.state.pageName, { ...event.data, ...event.state.props });
             if (event.returnTarget) {
