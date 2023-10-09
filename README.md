@@ -2,6 +2,9 @@
 
 This page contains all information required to learn about the program's structure, functionality and how to modify it.
 
+![image](https://github.com/AlphaSoundZ/apollo-booking-system/assets/85343235/71dbe8ad-b2e5-465a-8336-aa9d86096f31)
+
+
 ## Index
 
 -   [Interactions](#interactions)
