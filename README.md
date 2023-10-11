@@ -148,6 +148,16 @@ There are a few configuration options available, these can be found in `.env.exa
 
 The program does not allow for options to be missing from the configuration as it will throw an error at runtime.
 
+### Api token
+
+You can get the token executing the following request:
+
+```console
+$ curl {API_URL}/token/authorize -H "Content-Type:application/json" -d '{"username":"your_username", "password":"your_password"}'
+```
+
+Replace `your_username`, `your_password` and `{API_URL}` with the respective parameters!
+
 ## Running the program
 
 **WARNING:** Please make sure that the [configuration](#configuration) is properly set up.
