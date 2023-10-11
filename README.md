@@ -124,6 +124,13 @@ $ yarn build
 
 That will first install all required dependencies for the UI and then build the UI into the `client/dist` directory. That directory (and it's content) is required to display the UI.
 
+Next do the same in the root directory. So navitate into the root directory an execute the following commands
+
+```console
+$ yarn
+$ yarn build
+```
+
 More build options for the client can be found in here:  
 [/client/README.md](client/README.md)
 
